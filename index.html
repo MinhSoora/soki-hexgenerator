@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft HEX Color Generator | MinhSoora</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <meta name="description" content="Tạo màu HEX gradient cho Minecraft server của bạn dễ dàng. Hỗ trợ nhiều định dạng plugin!">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --pink-primary: #ff6eb4;
+      --pink-light: #ffd6ec;
+      --pink-soft: #fff0f8;
+      --pink-dark: #d63384;
+      --pink-border: #ffb3d9;
+      --white: #ffffff;
+      --text-dark: #3a1a2e;
+      --text-mid: #7a3a5e;
+      --text-light: #b07090;
+      --bg-main: #fff8fc;
+      --card-bg: #ffffff;
+      --card-border: #ffe0f0;
+      --input-bg: #fff5fa;
+      --input-border: #ffb3d9;
+      --shadow: rgba(255, 110, 180, 0.15);
+      --shadow-strong: rgba(255, 110, 180, 0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-main);
+      color: var(--text-dark);
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Floating particles background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(255,182,217,0.25) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(255,110,180,0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(255,230,245,0.3) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container-main {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 16px 40px;
+    }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      text-align: center;
+      padding: 32px 16px 16px;
+      position: relative;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .logo-wrap img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px var(--shadow-strong);
+      animation: floatLogo 3s ease-in-out infinite;
+    }
+
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .site-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(14px, 3vw, 22px);
+      background: linear-gradient(135deg, #ff6eb4, #d63384, #ff9dce);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.4;
+      text-shadow: none;
+    }
+
+    .site-subtitle {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    /* sparkle strip */
+    .sparkle-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 12px 0;
+      font-size: 18px;
+      animation: sparkleSlide 4s linear infinite;
+    }
+    @keyframes sparkleSlide {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px var(--shadow);
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 6px 28px var(--shadow-strong); }
+
+    .card-legend {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--pink-dark);
+      background: linear-gradient(135deg, #fff0f8, #ffd6ec);
+      border: 2px solid var(--pink-border);
+      border-radius: 999px;
+      padding: 5px 14px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    /* ===== PREVIEW ===== */
+    .preview-box {
+      background: linear-gradient(135deg, #2a0a1a, #1a0a0f);
+      border-radius: 14px;
+      border: 2px solid #4a1a2e;
+      padding: 28px 20px;
+      text-align: center;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .preview-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.015) 2px,
+        rgba(255,255,255,0.015) 4px
+      );
+      pointer-events: none;
+    }
+
+    #coloredNick {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(14px, 2.5vw, 22px);
+      letter-spacing: 2px;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    /* ===== INPUT ===== */
+    .input-main {
+      font-family: 'Nunito', sans-serif;
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 16px;
+      color: var(--text-dark);
+      width: 100%;
+      font-weight: 700;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .input-main:focus {
+      border-color: var(--pink-primary);
+      box-shadow: 0 0 0 3px rgba(255,110,180,0.2);
+    }
+
+    /* ===== COLOR PALETTE ===== */
+    #hexColors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .color-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: var(--pink-soft);
+      border: 2px solid var(--pink-border);
+      border-radius: 14px;
+      padding: 8px;
+      width: 90px;
+      cursor: grab;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+    }
+    .color-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px var(--shadow-strong); }
+    .color-card:active { cursor: grabbing; }
+    .color-card.dragging { opacity: 0.4; transform: scale(0.93); }
+    .color-card.drop-target { border-color: var(--pink-dark); border-style: dashed; }
+
+    .color-card input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+      width: 100%;
+      height: 44px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .color-card input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    .color-card input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
+
+    .hex-display {
+      font-family: 'Nunito', monospace;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-mid);
+      background: transparent;
+      border: none;
+      width: 70px;
+      text-align: center;
+      outline: none;
+      cursor: text;
+    }
+    .hex-display:focus {
+      border-bottom: 1px dashed var(--pink-primary);
+    }
+
+    .btn-remove-color {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 22px;
+      height: 22px;
+      background: #fee2e2;
+      border: 2px solid #fca5a5;
+      border-radius: 50%;
+      color: #dc2626;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 900;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+    .btn-remove-color:hover { background: #fecaca; }
+
+    /* ===== BUTTONS ===== */
+    .btn-pink {
+      background: linear-gradient(135deg, var(--pink-primary), var(--pink-dark));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.2s, box-shadow 0.2s;
+      box-shadow: 0 3px 10px var(--shadow-strong);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn-pink:hover { filter: brightness(1.08); box-shadow: 0 5px 16px var(--shadow-strong); }
+    .btn-pink:active { transform: scale(0.96); box-shadow: none; }
+
+    .btn-outline {
+      background: var(--pink-soft);
+      color: var(--pink-dark);
+      border: 2px solid var(--pink-border);
+      border-radius: 10px;
+      padding: 7px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn-outline:hover { background: var(--pink-light); border-color: var(--pink-primary); }
+    .btn-outline:active { transform: scale(0.96); }
+
+    .btn-add-color {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, #fff0f8, #ffd6ec);
+      border: 2px dashed var(--pink-border);
+      border-radius: 14px;
+      color: var(--pink-dark);
+      font-size: 28px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-add-color:hover { background: var(--pink-light); border-color: var(--pink-primary); transform: scale(1.04); }
+
+    /* ===== CHECKBOX STYLE ===== */
+    .check-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .check-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--pink-soft);
+      border: 2px solid var(--pink-border);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .check-label:hover { background: var(--pink-light); border-color: var(--pink-primary); }
+    .check-label input[type="checkbox"] {
+      accent-color: var(--pink-dark);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* ===== SELECT ===== */
+    .select-custom {
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .select-custom:focus { border-color: var(--pink-primary); }
+
+    /* ===== OUTPUT ===== */
+    .output-box {
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-dark);
+      min-height: 60px;
+      word-break: break-all;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      width: 100%;
+    }
+
+    /* ===== TABS (mode) ===== */
+    .tab-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--pink-soft);
+      border: 2px solid var(--pink-border);
+      border-radius: 10px;
+      padding: 7px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { background: var(--pink-light); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--pink-primary), var(--pink-dark));
+      color: white;
+      border-color: var(--pink-dark);
+      box-shadow: 0 3px 10px var(--shadow-strong);
+    }
+
+    /* ===== HISTORY ===== */
+    .history-item {
+      background: var(--pink-soft);
+      border: 1.5px solid var(--pink-border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--text-dark);
+      word-break: break-all;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .history-item:hover { background: var(--pink-light); border-color: var(--pink-primary); }
+
+    /* ===== TOAST ===== */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: linear-gradient(135deg, var(--pink-primary), var(--pink-dark));
+      color: white;
+      padding: 10px 24px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 14px;
+      box-shadow: 0 6px 24px var(--shadow-strong);
+      z-index: 9999;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+      opacity: 0;
+      white-space: nowrap;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ===== WARNING ===== */
+    .warning-text {
+      color: #ef4444;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 6px;
+      display: none;
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--text-light);
+      font-size: 13px;
+      font-weight: 700;
+      border-top: 2px solid var(--card-border);
+      margin-top: 10px;
+    }
+    .site-footer span { color: var(--pink-dark); }
+
+    /* ===== LABEL ===== */
+    .field-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-mid);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    /* ===== LORE/MOTD TEXTAREA ===== */
+    .textarea-main {
+      font-family: 'Nunito', sans-serif;
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+      width: 100%;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .textarea-main:focus {
+      border-color: var(--pink-primary);
+      box-shadow: 0 0 0 3px rgba(255,110,180,0.2);
+    }
+
+    /* === LORE PREVIEW === */
+    #lore-text, #motd-preview {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      text-align: left;
+      word-break: break-all;
+      line-height: 2;
+    }
+
+    /* === ANIM SECTION === */
+    .anim-preview {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(12px, 2vw, 18px);
+      letter-spacing: 2px;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    /* glitter effect on preview */
+    @keyframes glitter {
+      0%   { filter: brightness(1); }
+      50%  { filter: brightness(1.15) drop-shadow(0 0 6px rgba(255,110,180,0.6)); }
+      100% { filter: brightness(1); }
+    }
+    .preview-box:hover #coloredNick,
+    .preview-box:hover #lore-text,
+    .preview-box:hover #motd-preview {
+      animation: glitter 1.5s ease-in-out infinite;
+    }
+
+    /* num colors input */
+    .num-input {
+      background: var(--input-bg);
+      border: 2px solid var(--input-border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-dark);
+      width: 60px;
+      text-align: center;
+      outline: none;
+    }
+    .num-input:focus { border-color: var(--pink-primary); }
+
+    /* row flex helpers */
+    .flex-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .flex-col { display: flex; flex-direction: column; gap: 10px; }
+
+    /* section divider */
+    .section-gap { margin-bottom: 14px; }
+
+    /* pink badge */
+    .badge {
+      background: linear-gradient(135deg, #ffd6ec, #ffb3d9);
+      color: var(--pink-dark);
+      border: 1.5px solid var(--pink-border);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* responsive */
+    @media (max-width: 600px) {
+      .color-card { width: 76px; }
+      .btn-add-color { width: 76px; height: 76px; }
+    }
+
+    /* Sparkle float particles */
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      font-size: 16px;
+      animation: particleFly linear forwards;
+      z-index: 0;
+      opacity: 0;
+    }
+    @keyframes particleFly {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(-120px) rotate(180deg); opacity: 0; }
+    }
+
+    /* iridium warning */
+    #iridium-warning {
+      display: none;
+      color: #f59e0b;
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating particles container -->
+<div id="particles-container" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;"></div>
+
+<div class="container-main">
+
+  <!-- HEADER -->
+  <div class="site-header">
+    <div class="logo-wrap">
+      <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+      <div>
+        <div class="site-title">Minecraft HEX<br>Color Generator</div>
+        <div class="site-subtitle">✨ Tạo màu gradient đẹp cho server Minecraft của bạn ✨</div>
+      </div>
+    </div>
+    <div class="sparkle-row">
+      <span>🌸</span><span>💎</span><span>🎀</span><span>💗</span><span>✨</span><span>🌷</span><span>💞</span><span>🎀</span><span>💎</span><span>🌸</span>
+    </div>
+  </div>
+
+  <!-- MODE TABS -->
+  <div class="card">
+    <div class="card-legend">🎮 Chế Độ</div>
+    <div class="tab-group">
+      <button class="tab-btn active" id="tab-text" onclick="switchMode(1)">📝 Văn Bản</button>
+      <button class="tab-btn" id="tab-lore" onclick="switchMode(2)">🏹 Lore</button>
+      <button class="tab-btn" id="tab-motd" onclick="switchMode(3)">🎀 MOTD</button>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="card">
+    <div class="card-legend">👁️ Xem Trước</div>
+
+    <!-- Text mode -->
+    <div id="preview-text">
+      <div class="preview-box">
+        <span id="coloredNick">Gõ gì đó vào...</span>
+      </div>
+      <input type="text" class="input-main" id="nickname" placeholder="Nhập văn bản của bạn tại đây..." oninput="updateOutputText()" maxlength="200" value="MinhSoora">
+    </div>
+
+    <!-- Lore mode -->
+    <div id="preview-lore" style="display:none;">
+      <div class="preview-box" style="flex-direction:column;align-items:flex-start;">
+        <div id="lore-text"></div>
+      </div>
+      <textarea class="textarea-main" id="lore-input" placeholder="Nhập nhiều dòng lore (mỗi dòng là 1 dòng lore)..." oninput="updateOutputText(this)" rows="3">Dòng lore thứ nhất
+Dòng lore thứ hai</textarea>
+    </div>
+
+    <!-- MOTD mode -->
+    <div id="preview-motd" style="display:none;">
+      <div class="preview-box" style="background: linear-gradient(135deg, #1a1a2e, #0d0d1a); flex-direction:column;">
+        <div id="motd-preview"></div>
+      </div>
+      <textarea class="textarea-main" id="motd-input" placeholder="Nhập MOTD (tối đa 2 dòng)..." oninput="updateOutputText(this)" rows="2" maxlength="200">Server của tôi
+Chào mừng đến với thế giới!</textarea>
+    </div>
+  </div>
+
+  <!-- COLOR PALETTE -->
+  <div class="card">
+    <div class="card-legend">🎨 Bảng Màu</div>
+
+    <div class="flex-row section-gap">
+      <label class="field-label" style="margin:0">Số màu:</label>
+      <input type="number" id="numOfColors" class="num-input" value="3" min="2" max="20" onchange="handleNumColors(this.value)">
+      <span class="badge">Tối đa 20 màu</span>
+    </div>
+
+    <div id="hexColors" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-bottom:12px;"></div>
+
+    <div class="flex-row" style="margin-top:4px;">
+      <label class="field-label" style="margin:0">Preset:</label>
+      <select class="select-custom" id="preset-select" onchange="loadPreset(this.value)">
+        <option value="">— Chọn preset —</option>
+        <option value="Rainbow">🌈 Cầu vồng</option>
+        <option value="Fire">🔥 Lửa</option>
+        <option value="Sweet Morning">🌸 Sáng ngọt</option>
+        <option value="Deep Space">🌌 Vũ trụ</option>
+        <option value="Sunset">🌅 Hoàng hôn</option>
+        <option value="Rose">🌹 Hồng nhạt</option>
+        <option value="Candy">🍬 Kẹo ngọt</option>
+        <option value="Instagram">📸 Instagram</option>
+        <option value="Amethyst">💜 Thạch anh</option>
+        <option value="JShine">✨ JShine</option>
+        <option value="Cosmic Fusion">🌠 Cosmic</option>
+        <option value="TikTok">🎵 TikTok</option>
+        <option value="Peach">🍑 Đào</option>
+        <option value="Party">🎉 Tiệc</option>
+        <option value="Quepal">🌿 Quepal</option>
+        <option value="Mango">🥭 Xoài</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STYLING & TOOLS -->
+  <div class="card">
+    <div class="card-legend">✨ Định Dạng & Công Cụ</div>
+
+    <div class="section-gap">
+      <label class="field-label">Kiểu chữ:</label>
+      <div class="check-group">
+        <label class="check-label"><input type="checkbox" id="bold" onchange="updateOutputText()"> <b>Đậm</b></label>
+        <label class="check-label"><input type="checkbox" id="italics" onchange="updateOutputText()"> <i>Nghiêng</i></label>
+        <label class="check-label"><input type="checkbox" id="underline" onchange="updateOutputText()"> <u>Gạch dưới</u></label>
+        <label class="check-label"><input type="checkbox" id="strike" onchange="updateOutputText()"> <s>Gạch ngang</s></label>
+      </div>
+    </div>
+
+    <div class="section-gap">
+      <label class="field-label">Hành động:</label>
+      <div class="flex-row">
+        <button class="btn-outline" onclick="rotateColors(-1)">⬅️ Xoay trái</button>
+        <button class="btn-outline" onclick="reverseColors()">🔄 Đảo ngược</button>
+        <button class="btn-outline" onclick="rotateColors(1)">➡️ Xoay phải</button>
+      </div>
+    </div>
+
+    <div>
+      <label class="field-label">Hoạt ảnh gradient:</label>
+      <div class="flex-row">
+        <select class="select-custom" id="anim-direction">
+          <option value="right">➡️ Sang phải</option>
+          <option value="left">⬅️ Sang trái</option>
+        </select>
+        <button class="btn-pink" onclick="generateAnimation()">🎬 Tạo hoạt ảnh</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIGURATION -->
+  <div class="card">
+    <div class="card-legend">🛠️ Cấu Hình</div>
+
+    <div class="flex-row section-gap">
+      <label class="field-label" style="margin:0">Định dạng:</label>
+      <select class="select-custom" id="output-format" onchange="updateOutputText()">
+        <optgroup label="— Định dạng phổ biến —">
+          <option value="a0">Default &#rrggbb</option>
+          <option value="a1">Chat &lt;#rrggbb&gt;</option>
+          <option value="a2">Legacy &x&r&r&g&g&b&b</option>
+          <option value="a3">Nick &#rrggbb</option>
+          <option value="a6">Console §x§r§r§g§g§b§b</option>
+          <option value="a7">BBCode [COLOR=#rrggbb]</option>
+          <option value="a8">MOTD (\u00A7x)</option>
+        </optgroup>
+        <optgroup label="— API phổ biến —">
+          <option value="a11">Adventure Gradient</option>
+          <option value="a12">Iridium Gradient</option>
+        </optgroup>
+        <optgroup label="— Định dạng khác —">
+          <option value="a13">Brackets {#rrggbb}</option>
+          <option value="a14">Simple #rrggbb</option>
+          <option value="a15">Percentage %#rrggbb%</option>
+        </optgroup>
+      </select>
+    </div>
+    <div id="iridium-warning">⚠️ Định dạng Iridium chỉ hỗ trợ 2 màu!</div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="card">
+    <div class="card-legend">📝 Mã Đầu Ra</div>
+    <div id="outputText" class="output-box">Kết quả mã sẽ hiển thị ở đây...</div>
+    <div class="warning-text" id="length-warning">⚠️ Mã quá dài cho chat (vượt 256 ký tự)!</div>
+    <div class="flex-row" style="margin-top:10px;">
+      <button class="btn-pink" onclick="copyOutput()">📋 Sao chép mã</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card">
+    <div class="card-legend">📚 Lịch Sử</div>
+    <div class="flex-row section-gap">
+      <button class="btn-pink" onclick="saveToHistory()">💾 Lưu kiểu hiện tại</button>
+      <button class="btn-outline" onclick="clearHistory()">🗑️ Xóa lịch sử</button>
+    </div>
+    <div id="history-list" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+      <div style="color:var(--text-light);font-size:13px;font-weight:700;">Lịch sử trống.</div>
+    </div>
+  </div>
+
+  <!-- DECODE -->
+  <div class="card">
+    <div class="card-legend">🧬 Giải Mã Gradient</div>
+    <p style="font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:10px;">Dán mã gradient để trích xuất màu sắc đã dùng:</p>
+    <div class="flex-col">
+      <input type="text" class="input-main" id="decode-input" placeholder="Dán mã gradient cần giải mã...">
+      <div class="flex-row">
+        <button class="btn-pink" onclick="decodeGradient()">🧬 Giải mã</button>
+        <button class="btn-outline" onclick="decodeAndLoad()">📥 Giải mã & Tải</button>
+      </div>
+      <div id="decode-output" class="output-box" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- DATA MANAGEMENT -->
+  <div class="card">
+    <div class="card-legend">💾 Quản Lý Dữ Liệu</div>
+    <div class="flex-row section-gap">
+      <button class="btn-pink" onclick="exportOptions()">⚙️ Xuất cài đặt</button>
+    </div>
+    <div style="margin-top:10px;">
+      <label class="field-label">Nhập cài đặt đã xuất:</label>
+      <input type="text" class="input-main" id="import-input" placeholder="Dán chuỗi xuất và nhấn Enter để nhập..." onkeydown="if(event.key==='Enter') importOptions(this)">
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="site-footer">
+  ✨ Made by <span>MinhSoora</span> ✨ &nbsp;|&nbsp; 🌸 Công cụ Minecraft HEX Color Generator tiếng Việt 🌸
+</div>
+
+<!-- TOAST -->
+<div id="toast">✅ Đã sao chép!</div>
+
+<script>
+/* ========================================================
+   CORE DATA
+   ======================================================== */
+let currentMode = 1;
+let historyList = [];
+
+const presets = {
+  "Rainbow":        ["FF0000","FF7F00","FFFF00","00FF00","0000FF","4B0082","9400D3"],
+  "Fire":           ["A10100","DA3604","FE650D","FFC11F","FFF75D"],
+  "Sweet Morning":  ["FF5F6D","FFC371"],
+  "Deep Space":     ["000000","434343"],
+  "Sunset":         ["FF512F","DD2476"],
+  "Rose":           ["F4C4F3","FC67FA"],
+  "Candy":          ["009FFF","ec2F4B"],
+  "Instagram":      ["833ab4","fd1d1d","fcb045"],
+  "Amethyst":       ["9D50BB","6E48AA"],
+  "JShine":         ["12c2e9","c471ed","f64f59"],
+  "Cosmic Fusion":  ["ff00cc","333399"],
+  "TikTok":         ["FF0050","4B0018","00F2EA"],
+  "Peach":          ["ED4264","FFEDBC"],
+  "Party":          ["3A3AAE","7719B8","FF00CC"],
+  "Quepal":         ["11998E","38EF7D"],
+  "Mango":          ["FFE259","FFA751"],
+};
+
+const formats = {
+  a0:  { template: '&#$1$2$3$4$5$6$f$c', formatChar: '&', maxLength: 256 },
+  a1:  { template: '<#$1$2$3$4$5$6>$f$c', formatChar: '&', maxLength: 256 },
+  a2:  { template: '&x&$1&$2&$3&$4&$5&$6$f$c', formatChar: '&', maxLength: 256 },
+  a3:  { template: '/nick &#$1$2$3$4$5$6$f$c', formatChar: '&', maxLength: 256 },
+  a6:  { template: '§x§$1§$2§$3§$4§$5§$6$f$c', formatChar: '§', maxLength: null },
+  a7:  { template: '[COLOR=#$1$2$3$4$5$6]$c[/COLOR]', formatChar: null, maxLength: null },
+  a8:  { template: '\\u00A7x\\u00A7$1\\u00A7$2\\u00A7$3\\u00A7$4\\u00A7$5\\u00A7$6$f$c', formatChar: '\\u00A7', maxLength: null },
+  a11: { template: '&#$1$2$3$4$5$6$f$c', formatChar: null, maxLength: null, adventureGradient: true },
+  a12: { template: '&#$1$2$3$4$5$6$f$c', formatChar: null, maxLength: null, iridiumGradient: true },
+  a13: { template: '{#$1$2$3$4$5$6}$f$c', formatChar: '&', maxLength: null },
+  a14: { template: '#$1$2$3$4$5$6$f$c', formatChar: '&', maxLength: null },
+  a15: { template: '%#$1$2$3$4$5$6%$f$c', formatChar: '&', maxLength: null },
+};
+
+// Saved colors array (hex strings without #)
+let savedColors = ['ff6eb4','d63384','ff9dce'];
+
+/* ========================================================
+   COLOR MATH
+   ======================================================== */
+function hexDigit(c) {
+  const s = '0123456789abcdef';
+  let i = parseInt(c);
+  if (i === 0 || isNaN(c)) return '00';
+  i = Math.round(Math.min(Math.max(0, i), 255));
+  return s.charAt((i - i % 16) / 16) + s.charAt(i % 16);
+}
+function convertToHex(rgb) {
+  return hexDigit(rgb[0]) + hexDigit(rgb[1]) + hexDigit(rgb[2]);
+}
+function trim(s) { return s.charAt(0) === '#' ? s.substring(1, 7) : s; }
+function convertToRGB(hex) {
+  const h = trim(hex);
+  return [
+    parseInt(h.substring(0, 2), 16),
+    parseInt(h.substring(2, 4), 16),
+    parseInt(h.substring(4, 6), 16),
+  ];
+}
+
+class TwoStopGradient {
+  constructor(start, end, lo, hi) {
+    this.start = start; this.end = end; this.lo = lo; this.hi = hi;
+  }
+  colorAt(step) {
+    return [0,1,2].map(i => {
+      const range = this.hi - this.lo;
+      const interval = (this.end[i] - this.start[i]) / range;
+      return Math.round(interval * (step - this.lo) + this.start[i]);
+    });
+  }
+}
+
+class Gradient {
+  constructor(colors, numSteps) {
+    this.colors = colors;
+    this.gradients = [];
+    this.steps = numSteps - 1;
+    this.step = 0;
+    const inc = this.steps / (colors.length - 1);
+    for (let i = 0; i < colors.length - 1; i++)
+      this.gradients.push(new TwoStopGradient(colors[i], colors[i+1], inc*i, inc*(i+1)));
+  }
+  next() {
+    if (this.steps < 1) return this.colors[0];
+    if (this.steps < this.colors.length) { return this.colors[this.step++]; }
+    const adj = Math.round(Math.abs(((2 * Math.asin(Math.sin(this.step * (Math.PI / (2 * this.steps))))) / Math.PI) * this.steps));
+    let color;
+    if (this.gradients.length < 2) {
+      color = this.gradients[0].colorAt(adj);
+    } else {
+      const seg = this.steps / this.gradients.length;
+      const idx = Math.min(Math.floor(adj / seg), this.gradients.length - 1);
+      color = this.gradients[idx].colorAt(adj);
+    }
+    this.step++;
+    return color;
+  }
+}
+
+/* ========================================================
+   PALETTE RENDERING
+   ======================================================== */
+function renderPalette() {
+  const container = document.getElementById('hexColors');
+  container.innerHTML = '';
+  savedColors.forEach((color, i) => {
+    const card = document.createElement('div');
+    card.className = 'color-card';
+    card.setAttribute('draggable', 'true');
+    card.setAttribute('data-index', i);
+    card.innerHTML = `
+      <button class="btn-remove-color" onclick="removeColor(${i})" title="Xóa màu">×</button>
+      <input type="color" class="hexColor" id="color-${i+1}" value="#${color.replace('#','')}"
+        oninput="onColorChange(${i}, this.value)">
+      <input class="hex-display" type="text" value="${color.replace('#','').toUpperCase()}"
+        maxlength="6" oninput="onHexTextChange(${i}, this.value)" onfocus="this.select()">
+    `;
+    container.appendChild(card);
+  });
+
+  // Add button
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn-add-color';
+  addBtn.title = 'Thêm màu';
+  addBtn.innerHTML = '+';
+  addBtn.onclick = addColor;
+  container.appendChild(addBtn);
+
+  setupDragDrop();
+  document.getElementById('numOfColors').value = savedColors.length;
+}
+
+function onColorChange(index, value) {
+  savedColors[index] = value.replace('#', '');
+  // update hex text display
+  const card = document.querySelectorAll('.color-card')[index];
+  if (card) card.querySelector('.hex-display').value = value.replace('#','').toUpperCase();
+  updateOutputText();
+}
+
+function onHexTextChange(index, value) {
+  const clean = value.replace(/[^0-9a-fA-F]/g,'');
+  if (clean.length === 6) {
+    savedColors[index] = clean;
+    document.getElementById(`color-${index+1}`).value = '#' + clean;
+    updateOutputText();
+  }
+}
+
+function addColor() {
+  if (savedColors.length >= 20) { showToast('⚠️ Tối đa 20 màu!'); return; }
+  savedColors.push(getRandomHex());
+  renderPalette();
+  updateOutputText();
+}
+
+function removeColor(index) {
+  if (savedColors.length <= 2) { showToast('⚠️ Cần ít nhất 2 màu!'); return; }
+  savedColors.splice(index, 1);
+  renderPalette();
+  updateOutputText();
+}
+
+function handleNumColors(val) {
+  const n = Math.min(20, Math.max(2, parseInt(val) || 2));
+  while (savedColors.length < n) savedColors.push(getRandomHex());
+  while (savedColors.length > n) savedColors.pop();
+  renderPalette();
+  updateOutputText();
+}
+
+function getRandomHex() {
+  return Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+}
+
+function getColorsRGB() {
+  return savedColors.map(c => convertToRGB(c.replace('#','')));
+}
+
+/* ========================================================
+   DRAG & DROP
+   ======================================================== */
+function setupDragDrop() {
+  const cards = document.querySelectorAll('.color-card');
+  let dragSrc = null;
+
+  cards.forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragSrc = parseInt(card.getAttribute('data-index'));
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.color-card').forEach(c => c.classList.remove('drop-target'));
+    });
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      card.classList.add('drop-target');
+    });
+    card.addEventListener('dragleave', () => card.classList.remove('drop-target'));
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      card.classList.remove('drop-target');
+      const dest = parseInt(card.getAttribute('data-index'));
+      if (dragSrc !== dest) {
+        const tmp = savedColors[dragSrc];
+        savedColors[dragSrc] = savedColors[dest];
+        savedColors[dest] = tmp;
+        renderPalette();
+        updateOutputText();
+      }
+    });
+  });
+}
+
+/* ========================================================
+   GRADIENT OUTPUT
+   ======================================================== */
+function buildOutput(text, colorsList, format) {
+  const bold = document.getElementById('bold').checked;
+  const italic = document.getElementById('italics').checked;
+  const underline = document.getElementById('underline').checked;
+  const strike = document.getElementById('strike').checked;
+
+  let colorsForGrad = colorsList;
+  if (format.iridiumGradient) colorsForGrad = [colorsList[0], colorsList[colorsList.length-1]];
+
+  const chars = text.replace(/ /g, '');
+  const gradient = new Gradient(colorsForGrad, chars.length || 1);
+  let output = '';
+  let charColors = [];
+  let startIr, endIr;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charAt(i);
+    if (char === ' ') { output += char; charColors.push(null); continue; }
+    const hex = convertToHex(gradient.next());
+    charColors.push(hex);
+    if (format.adventureGradient || format.iridiumGradient) { continue; }
+    let h = format.template;
+    for (let n = 1; n <= 6; n++) h = h.replace(`$${n}`, hex.charAt(n-1));
+    let fc = '';
+    if (format.formatChar !== null && format.formatChar !== undefined) {
+      if (bold) fc += format.formatChar + 'l';
+      if (italic) fc += format.formatChar + 'o';
+      if (underline) fc += format.formatChar + 'n';
+      if (strike) fc += format.formatChar + 'm';
+    }
+    h = h.replace('$f', fc).replace('$c', char);
+    if (i === 0) startIr = h.slice(2,8);
+    if (i+1 === text.length) endIr = h.slice(2,8);
+    output += h;
+  }
+
+  if (format.iridiumGradient) {
+    return { code: `<GRADIENT:${startIr || ''}>${text}</GRADIENT:${endIr || ''}>`, charColors };
+  } else if (format.adventureGradient) {
+    let eff = '';
+    if (bold) eff += '<b>'; if (italic) eff += '<i>';
+    if (underline) eff += '<u>'; if (strike) eff += '<st>';
+    let code;
+    if (colorsList.length === 1) {
+      code = `<${convertToHex(colorsList[0])}>${eff}${text}`;
+    } else {
+      code = `<gradient:${colorsList.map(c=>`#${convertToHex(c)}`).join(':')}>${eff}${text}</gradient>`;
+    }
+    return { code, charColors };
+  }
+  return { code: output, charColors };
+}
+
+function applyGradientToDOM(container, text, charColors) {
+  container.innerHTML = '';
+  let ci = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charAt(i);
+    const span = document.createElement('span');
+    if (char === ' ') { span.textContent = ' '; }
+    else { span.style.color = '#' + (charColors[ci] || 'ffffff'); span.textContent = char; ci++; }
+    container.appendChild(span);
+  }
+}
+
+/* ========================================================
+   UPDATE OUTPUT (main function)
+   ======================================================== */
+function updateOutputText() {
+  const format = formats[document.getElementById('output-format').value] || formats['a0'];
+  const colorsList = getColorsRGB();
+  const outputText = document.getElementById('outputText');
+
+  // iridium warning
+  document.getElementById('iridium-warning').style.display = format.iridiumGradient ? 'block' : 'none';
+
+  if (currentMode === 1) {
+    let text = document.getElementById('nickname').value || 'Gõ gì đó vào...';
+    const { code, charColors } = buildOutput(text, colorsList, format);
+    outputText.textContent = code;
+    applyGradientToDOM(document.getElementById('coloredNick'), text, charColors);
+    // length warning
+    const warn = document.getElementById('length-warning');
+    warn.style.display = (format.maxLength && code.length > format.maxLength) ? 'block' : 'none';
+
+  } else if (currentMode === 2) {
+    const lines = (document.getElementById('lore-input').value || 'Gõ gì đó...').split('\n');
+    const loreText = document.getElementById('lore-text');
+    loreText.innerHTML = '';
+    const outputs = [];
+    lines.forEach(line => {
+      const { code, charColors } = buildOutput(line, colorsList, format);
+      outputs.push(code);
+      const div = document.createElement('div');
+      applyGradientToDOM(div, line, charColors);
+      loreText.appendChild(div);
+    });
+    outputText.textContent = outputs.join('\r\n');
+
+  } else if (currentMode === 3) {
+    const lines = (document.getElementById('motd-input').value || 'Gõ gì đó...').split('\n').slice(0,2);
+    const motdPreview = document.getElementById('motd-preview');
+    motdPreview.innerHTML = '';
+    const outputs = [];
+    lines.forEach(line => {
+      const { code, charColors } = buildOutput(line, colorsList, format);
+      outputs.push(code);
+      const div = document.createElement('div');
+      applyGradientToDOM(div, line, charColors);
+      motdPreview.appendChild(div);
+    });
+    outputText.textContent = outputs.join('\r\n');
+  }
+}
+
+/* ========================================================
+   MODE SWITCH
+   ======================================================== */
+function switchMode(m) {
+  currentMode = m;
+  document.getElementById('preview-text').style.display = m === 1 ? '' : 'none';
+  document.getElementById('preview-lore').style.display = m === 2 ? '' : 'none';
+  document.getElementById('preview-motd').style.display = m === 3 ? '' : 'none';
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i+1 === m));
+  updateOutputText();
+}
+
+/* ========================================================
+   PALETTE TOOLS
+   ======================================================== */
+function loadPreset(name) {
+  if (!name || !presets[name]) return;
+  savedColors = [...presets[name]];
+  renderPalette();
+  updateOutputText();
+  document.getElementById('preset-select').value = '';
+}
+
+function rotateColors(dir) {
+  if (dir === -1) { savedColors.unshift(savedColors.pop()); }
+  else { savedColors.push(savedColors.shift()); }
+  renderPalette();
+  updateOutputText();
+}
+
+function reverseColors() {
+  savedColors.reverse();
+  renderPalette();
+  updateOutputText();
+}
+
+/* ========================================================
+   ANIMATION GENERATOR
+   ======================================================== */
+function generateAnimation() {
+  const text = document.getElementById('nickname').value || 'MinhSoora';
+  const colorsList = getColorsRGB();
+  const format = formats[document.getElementById('output-format').value] || formats['a0'];
+  const toRight = document.getElementById('anim-direction').value === 'right';
+  const outputText = document.getElementById('outputText');
+
+  const frames = [];
+  const extended = [...savedColors];
+  const frameCount = savedColors.length;
+
+  for (let f = 0; f < frameCount; f++) {
+    const rotated = toRight
+      ? [...savedColors.slice(f), ...savedColors.slice(0,f)]
+      : [...savedColors.slice(frameCount-f), ...savedColors.slice(0, frameCount-f)];
+    const colors = rotated.map(c => convertToRGB(c.replace('#','')));
+    const { code } = buildOutput(text, colors, format);
+    frames.push(`- "${code}"`);
+  }
+
+  outputText.textContent = frames.join('\r\n');
+  showToast('🎬 Đã tạo hoạt ảnh!');
+}
+
+/* ========================================================
+   COPY
+   ======================================================== */
+function copyOutput() {
+  const text = document.getElementById('outputText').textContent;
+  if (!text || text === 'Kết quả mã sẽ hiển thị ở đây...') return;
+  navigator.clipboard.writeText(text).then(() => showToast('📋 Đã sao chép!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 Đã sao chép!');
+  });
+}
+
+/* ========================================================
+   HISTORY
+   ======================================================== */
+function saveToHistory() {
+  const format = document.getElementById('output-format').value;
+  const entry = {
+    colors: [...savedColors],
+    format,
+    bold: document.getElementById('bold').checked,
+    italic: document.getElementById('italics').checked,
+    underline: document.getElementById('underline').checked,
+    strike: document.getElementById('strike').checked,
+    time: new Date().toLocaleTimeString('vi-VN'),
+  };
+  historyList.unshift(entry);
+  if (historyList.length > 20) historyList.pop();
+  renderHistory();
+  showToast('💾 Đã lưu!');
+}
+
+function renderHistory() {
+  const container = document.getElementById('history-list');
+  container.innerHTML = '';
+  if (historyList.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-light);font-size:13px;font-weight:700;">Lịch sử trống.</div>';
+    return;
+  }
+  historyList.forEach((entry, i) => {
+    const colorPreview = entry.colors.map(c => `<span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#${c.replace('#','')}"></span>`).join('');
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        ${colorPreview}
+        <span style="font-size:11px;color:var(--text-light);font-family:Nunito,sans-serif;">${entry.format} · ${entry.time}</span>
+      </div>
+      <button class="btn-outline" style="padding:4px 10px;font-size:12px;" onclick="loadHistory(${i})">▶ Tải</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function loadHistory(i) {
+  const entry = historyList[i];
+  if (!entry) return;
+  savedColors = [...entry.colors];
+  document.getElementById('output-format').value = entry.format;
+  document.getElementById('bold').checked = entry.bold;
+  document.getElementById('italics').checked = entry.italic;
+  document.getElementById('underline').checked = entry.underline;
+  document.getElementById('strike').checked = entry.strike;
+  renderPalette();
+  updateOutputText();
+  showToast('📂 Đã tải kiểu!');
+}
+
+function clearHistory() {
+  historyList = [];
+  renderHistory();
+  showToast('🗑️ Đã xóa lịch sử!');
+}
+
+/* ========================================================
+   DECODE
+   ======================================================== */
+function extractColors(str, threshold = 40) {
+  const regex = /#([0-9a-fA-F]{6})/g;
+  let match;
+  const points = [];
+  let lastColor = null;
+  while ((match = regex.exec(str)) !== null) {
+    const rgb = convertToRGB(match[1]);
+    if (!lastColor) { points.push(match[1]); lastColor = rgb; continue; }
+    const dist = Math.sqrt([0,1,2].reduce((s,i) => s + (rgb[i]-lastColor[i])**2, 0));
+    if (dist >= threshold) { points.push(match[1]); lastColor = rgb; }
+  }
+  return points;
+}
+
+function decodeGradient() {
+  const input = document.getElementById('decode-input').value;
+  const colors = extractColors(input);
+  if (colors.length === 0) { showToast('❌ Không tìm thấy màu!'); return; }
+  const out = document.getElementById('decode-output');
+  out.style.display = 'block';
+  out.textContent = colors.map(c => '#' + c).join(', ');
+  showToast('🧬 Đã giải mã ' + colors.length + ' màu!');
+}
+
+function decodeAndLoad() {
+  const input = document.getElementById('decode-input').value;
+  const colors = extractColors(input);
+  if (colors.length === 0) { showToast('❌ Không tìm thấy màu!'); return; }
+  if (colors.length < 2) { showToast('⚠️ Cần ít nhất 2 màu!'); return; }
+  savedColors = colors;
+  renderPalette();
+  updateOutputText();
+  showToast('📥 Đã tải ' + colors.length + ' màu!');
+}
+
+/* ========================================================
+   EXPORT / IMPORT
+   ======================================================== */
+function exportOptions() {
+  const data = {
+    format: document.getElementById('output-format').value,
+    colors: savedColors,
+    bold: document.getElementById('bold').checked,
+    italic: document.getElementById('italics').checked,
+    underline: document.getElementById('underline').checked,
+    strike: document.getElementById('strike').checked,
+  };
+  const str = btoa(JSON.stringify(data));
+  navigator.clipboard.writeText(str).catch(() => {});
+  showToast('⚙️ Đã xuất cài đặt!');
+}
+
+function importOptions(el) {
+  try {
+    const data = JSON.parse(atob(el.value));
+    el.value = '';
+    savedColors = data.colors.map(c => Array.isArray(c) ? convertToHex(c) : c.replace('#',''));
+    document.getElementById('output-format').value = data.format;
+    document.getElementById('bold').checked = data.bold;
+    document.getElementById('italics').checked = data.italic;
+    document.getElementById('underline').checked = data.underline;
+    document.getElementById('strike').checked = data.strike;
+    renderPalette();
+    updateOutputText();
+    showToast('✅ Đã nhập cài đặt!');
+  } catch(e) {
+    el.value = '';
+    showToast('❌ Chuỗi nhập không hợp lệ!');
+  }
+}
+
+/* ========================================================
+   TOAST
+   ======================================================== */
+let toastTimeout;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+/* ========================================================
+   FLOATING PARTICLES
+   ======================================================== */
+const emojis = ['🌸','💖','✨','💎','🎀','💗','🌷','⭐','💓','🩷'];
+function spawnParticle() {
+  const container = document.getElementById('particles-container');
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.bottom = '0px';
+  const dur = 3 + Math.random() * 3;
+  p.style.animationDuration = dur + 's';
+  p.style.fontSize = (14 + Math.random() * 14) + 'px';
+  container.appendChild(p);
+  setTimeout(() => p.remove(), dur * 1000);
+}
+setInterval(spawnParticle, 800);
+
+/* ========================================================
+   INIT
+   ======================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+  renderPalette();
+  updateOutputText();
+});
+</script>
+</body>
+</html>
