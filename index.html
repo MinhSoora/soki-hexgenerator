@@ -6,156 +6,263 @@
   <title>Minecraft HEX Color Generator | MinhSoora</title>
   <link rel="icon" href="logo.png" type="image/png">
   <meta name="description" content="Tạo màu HEX gradient cho Minecraft server của bạn dễ dàng. Hỗ trợ nhiều định dạng plugin!">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Twemoji for consistent emoji rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
 
   <style>
+    /* ===== MINECRAFT FONTS (LOCAL) ===== */
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('MinecraftRegular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('MinecraftBold.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('MinecraftItalic.otf') format('opentype');
+      font-weight: 400;
+      font-style: italic;
+    }
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('MinecraftBoldItalic.otf') format('opentype');
+      font-weight: 700;
+      font-style: italic;
+    }
+
+    /* ===== VARIABLES ===== */
     :root {
-      --pink-primary: #ff6eb4;
-      --pink-light: #ffd6ec;
-      --pink-soft: #fff0f8;
-      --pink-dark: #d63384;
-      --pink-border: #ffb3d9;
-      --white: #ffffff;
-      --text-dark: #3a1a2e;
-      --text-mid: #7a3a5e;
-      --text-light: #b07090;
-      --bg-main: #fff8fc;
-      --card-bg: #ffffff;
-      --card-border: #ffe0f0;
-      --input-bg: #fff5fa;
-      --input-border: #ffb3d9;
-      --shadow: rgba(255, 110, 180, 0.15);
-      --shadow-strong: rgba(255, 110, 180, 0.3);
+      --bg-root:      #0d0f14;
+      --bg-main:      #111318;
+      --bg-card:      #181b22;
+      --bg-card2:     #1e2230;
+      --bg-input:     #13151d;
+      --bg-hover:     #232838;
+
+      --accent:       #5b8cff;
+      --accent2:      #7c5fff;
+      --accent-glow:  rgba(91,140,255,0.25);
+      --accent2-glow: rgba(124,95,255,0.2);
+
+      --border:       #2a2f3f;
+      --border-light: #353c52;
+      --border-accent:#3d52a0;
+
+      --text:         #e2e6f0;
+      --text-mid:     #9ba5be;
+      --text-dim:     #5a6378;
+
+      --green:        #3ddc84;
+      --red:          #ff4d5e;
+      --yellow:       #f5c542;
+      --orange:       #ff854d;
+
+      --shadow:       rgba(0,0,0,0.5);
+      --shadow-accent: rgba(91,140,255,0.18);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      background: var(--bg-main);
-      color: var(--text-dark);
-      font-family: 'Nunito', sans-serif;
+      background: var(--bg-root);
+      color: var(--text);
+      font-family: 'Nunito', 'Segoe UI', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
+      line-height: 1.5;
     }
 
-    /* Floating particles background */
+    /* Fallback for Nunito */
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    /* === BACKGROUND GRID === */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(circle at 15% 20%, rgba(255,182,217,0.25) 0%, transparent 40%),
-        radial-gradient(circle at 85% 80%, rgba(255,110,180,0.15) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(255,230,245,0.3) 0%, transparent 70%);
+      background-image:
+        linear-gradient(rgba(91,140,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91,140,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
       pointer-events: none;
       z-index: 0;
     }
 
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(91,140,255,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(124,95,255,0.07) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== LAYOUT ===== */
     .container-main {
       position: relative;
       z-index: 1;
       max-width: 960px;
       margin: 0 auto;
-      padding: 0 16px 40px;
+      padding: 0 16px 60px;
     }
 
     /* ===== HEADER ===== */
     .site-header {
       text-align: center;
-      padding: 32px 16px 16px;
+      padding: 40px 16px 20px;
       position: relative;
     }
 
-    .logo-wrap {
+    .header-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 18px 28px;
+      box-shadow: 0 8px 40px var(--shadow), 0 0 60px var(--accent-glow);
+    }
+
+    .logo-icon {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 14px;
-      margin-bottom: 10px;
+      font-size: 26px;
+      box-shadow: 0 4px 20px var(--shadow-accent);
+      flex-shrink: 0;
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-5px); }
     }
 
-    .logo-wrap img {
-      width: 56px;
-      height: 56px;
-      object-fit: contain;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px var(--shadow-strong);
-      animation: floatLogo 3s ease-in-out infinite;
-    }
-
-    @keyframes floatLogo {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
-    }
+    .header-text { text-align: left; }
 
     .site-title {
-      font-family: 'Press Start 2P', monospace;
-      font-size: clamp(14px, 3vw, 22px);
-      background: linear-gradient(135deg, #ff6eb4, #d63384, #ff9dce);
+      font-family: 'Minecraft', monospace;
+      font-size: clamp(12px, 2.5vw, 19px);
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), #a78bfa);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      line-height: 1.4;
-      text-shadow: none;
+      line-height: 1.5;
+      letter-spacing: 1px;
     }
 
     .site-subtitle {
-      font-size: 14px;
-      color: var(--text-light);
-      margin-top: 6px;
+      font-size: 13px;
+      color: var(--text-mid);
+      margin-top: 4px;
       font-weight: 600;
     }
 
-    /* sparkle strip */
-    .sparkle-row {
+    .badge-row {
       display: flex;
       justify-content: center;
       gap: 8px;
-      margin: 12px 0;
-      font-size: 18px;
-      animation: sparkleSlide 4s linear infinite;
+      margin-top: 14px;
+      flex-wrap: wrap;
     }
-    @keyframes sparkleSlide {
-      0%   { opacity: 1; }
-      50%  { opacity: 0.5; }
-      100% { opacity: 1; }
+
+    .header-badge {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-mid);
     }
+    .header-badge span { color: var(--accent); }
 
     /* ===== CARD ===== */
     .card {
-      background: var(--card-bg);
-      border: 2px solid var(--card-border);
-      border-radius: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       padding: 20px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       box-shadow: 0 4px 20px var(--shadow);
-      transition: box-shadow 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .card:hover { box-shadow: 0 6px 28px var(--shadow-strong); }
+    .card:hover { border-color: var(--border-light); box-shadow: 0 6px 30px var(--shadow); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 10px;
+      cursor: default;
+    }
+    .card-header.collapsible { cursor: pointer; user-select: none; }
+    .card-header.collapsible:hover .card-legend { color: var(--accent); }
 
     .card-legend {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 10px;
-      color: var(--pink-dark);
-      background: linear-gradient(135deg, #fff0f8, #ffd6ec);
-      border: 2px solid var(--pink-border);
-      border-radius: 999px;
-      padding: 5px 14px;
-      display: inline-block;
-      margin-bottom: 16px;
+      font-family: 'Minecraft', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text-mid);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
     }
+    .card-legend .legend-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .collapse-arrow {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--text-dim);
+      transition: transform 0.25s, background 0.2s;
+      flex-shrink: 0;
+    }
+    .card-header.collapsible:hover .collapse-arrow { background: var(--bg-hover); color: var(--text-mid); }
+    .card.collapsed .collapse-arrow { transform: rotate(-90deg); }
+    .card.collapsed .card-body { display: none; }
 
     /* ===== PREVIEW ===== */
     .preview-box {
-      background: linear-gradient(135deg, #2a0a1a, #1a0a0f);
-      border-radius: 14px;
-      border: 2px solid #4a1a2e;
-      padding: 28px 20px;
+      background: #0a0c10;
+      border: 1px solid #1e2535;
+      border-radius: 12px;
+      padding: 32px 24px;
       text-align: center;
-      min-height: 80px;
+      min-height: 90px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -168,41 +275,124 @@
       position: absolute;
       inset: 0;
       background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(255,255,255,0.015) 2px,
-        rgba(255,255,255,0.015) 4px
+        0deg, transparent, transparent 3px,
+        rgba(255,255,255,0.008) 3px, rgba(255,255,255,0.008) 4px
       );
+      pointer-events: none;
+    }
+    .preview-box::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
       pointer-events: none;
     }
 
     #coloredNick {
-      font-family: 'Press Start 2P', monospace;
-      font-size: clamp(14px, 2.5vw, 22px);
+      font-family: 'Minecraft', monospace;
+      font-size: clamp(13px, 2.2vw, 20px);
       letter-spacing: 2px;
       word-break: break-all;
-      line-height: 1.6;
+      line-height: 1.8;
+      position: relative;
+      z-index: 1;
+    }
+    #lore-text, #motd-preview {
+      font-family: 'Minecraft', monospace;
+      font-size: clamp(10px, 1.5vw, 13px);
+      word-break: break-all;
+      line-height: 2;
+      position: relative;
+      z-index: 1;
+    }
+    #lore-text { text-align: left; }
+
+    /* glitter on hover */
+    .preview-box:hover #coloredNick,
+    .preview-box:hover #lore-text,
+    .preview-box:hover #motd-preview {
+      animation: glitter 1.8s ease-in-out infinite;
+    }
+    @keyframes glitter {
+      0%, 100% { filter: brightness(1); }
+      50%       { filter: brightness(1.2) drop-shadow(0 0 8px rgba(91,140,255,0.5)); }
+    }
+
+    /* ===== MODE TABS ===== */
+    .tab-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 100px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      padding: 8px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .tab-btn:hover { background: var(--bg-hover); color: var(--text); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 2px 12px var(--shadow-accent);
     }
 
     /* ===== INPUT ===== */
     .input-main {
       font-family: 'Nunito', sans-serif;
-      background: var(--input-bg);
-      border: 2px solid var(--input-border);
-      border-radius: 12px;
-      padding: 10px 16px;
-      font-size: 16px;
-      color: var(--text-dark);
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      color: var(--text);
       width: 100%;
       font-weight: 700;
       transition: border-color 0.2s, box-shadow 0.2s;
       outline: none;
     }
     .input-main:focus {
-      border-color: var(--pink-primary);
-      box-shadow: 0 0 0 3px rgba(255,110,180,0.2);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }
+    .input-main::placeholder { color: var(--text-dim); }
+
+    .textarea-main {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      width: 100%;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .textarea-main:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .textarea-main::placeholder { color: var(--text-dim); }
 
     /* ===== COLOR PALETTE ===== */
     #hexColors {
@@ -216,20 +406,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      background: var(--pink-soft);
-      border: 2px solid var(--pink-border);
-      border-radius: 14px;
+      gap: 5px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 12px;
       padding: 8px;
-      width: 90px;
+      width: 86px;
       cursor: grab;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
       position: relative;
     }
-    .color-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px var(--shadow-strong); }
+    .color-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); border-color: var(--border-light); }
     .color-card:active { cursor: grabbing; }
-    .color-card.dragging { opacity: 0.4; transform: scale(0.93); }
-    .color-card.drop-target { border-color: var(--pink-dark); border-style: dashed; }
+    .color-card.dragging { opacity: 0.35; transform: scale(0.92); }
+    .color-card.drop-target { border-color: var(--accent); border-style: dashed; background: var(--bg-card2); }
 
     .color-card input[type="color"] {
       -webkit-appearance: none;
@@ -238,7 +428,7 @@
       background: none;
       padding: 0;
       width: 100%;
-      height: 44px;
+      height: 48px;
       border-radius: 8px;
       overflow: hidden;
     }
@@ -246,9 +436,9 @@
     .color-card input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
 
     .hex-display {
-      font-family: 'Nunito', monospace;
-      font-size: 11px;
-      font-weight: 800;
+      font-family: 'Minecraft', monospace;
+      font-size: 9px;
+      font-weight: 400;
       color: var(--text-mid);
       background: transparent;
       border: none;
@@ -256,80 +446,41 @@
       text-align: center;
       outline: none;
       cursor: text;
+      letter-spacing: 0.5px;
     }
-    .hex-display:focus {
-      border-bottom: 1px dashed var(--pink-primary);
-    }
+    .hex-display:focus { border-bottom: 1px dashed var(--accent); color: var(--text); }
 
     .btn-remove-color {
       position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 22px;
-      height: 22px;
-      background: #fee2e2;
-      border: 2px solid #fca5a5;
+      top: -7px;
+      right: -7px;
+      width: 20px;
+      height: 20px;
+      background: var(--red);
+      border: 2px solid var(--bg-card);
       border-radius: 50%;
-      color: #dc2626;
-      font-size: 12px;
+      color: white;
+      font-size: 11px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       font-weight: 900;
       line-height: 1;
-      transition: background 0.15s;
+      transition: opacity 0.15s, transform 0.15s;
+      opacity: 0;
     }
-    .btn-remove-color:hover { background: #fecaca; }
-
-    /* ===== BUTTONS ===== */
-    .btn-pink {
-      background: linear-gradient(135deg, var(--pink-primary), var(--pink-dark));
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 8px 16px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform 0.1s, filter 0.2s, box-shadow 0.2s;
-      box-shadow: 0 3px 10px var(--shadow-strong);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-    .btn-pink:hover { filter: brightness(1.08); box-shadow: 0 5px 16px var(--shadow-strong); }
-    .btn-pink:active { transform: scale(0.96); box-shadow: none; }
-
-    .btn-outline {
-      background: var(--pink-soft);
-      color: var(--pink-dark);
-      border: 2px solid var(--pink-border);
-      border-radius: 10px;
-      padding: 7px 14px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-    .btn-outline:hover { background: var(--pink-light); border-color: var(--pink-primary); }
-    .btn-outline:active { transform: scale(0.96); }
+    .color-card:hover .btn-remove-color { opacity: 1; }
+    .btn-remove-color:hover { transform: scale(1.15); }
 
     .btn-add-color {
-      width: 90px;
-      height: 90px;
-      background: linear-gradient(135deg, #fff0f8, #ffd6ec);
-      border: 2px dashed var(--pink-border);
-      border-radius: 14px;
-      color: var(--pink-dark);
-      font-size: 28px;
+      width: 86px;
+      height: 86px;
+      background: var(--bg-input);
+      border: 1px dashed var(--border-light);
+      border-radius: 12px;
+      color: var(--text-dim);
+      font-size: 24px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -337,106 +488,141 @@
       transition: all 0.15s;
       flex-shrink: 0;
     }
-    .btn-add-color:hover { background: var(--pink-light); border-color: var(--pink-primary); transform: scale(1.04); }
+    .btn-add-color:hover { background: var(--bg-card2); border-color: var(--accent); color: var(--accent); transform: scale(1.03); }
 
-    /* ===== CHECKBOX STYLE ===== */
-    .check-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 18px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: filter 0.15s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 3px 12px var(--shadow-accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
     }
+    .btn-primary:hover { filter: brightness(1.1); box-shadow: 0 5px 18px var(--shadow-accent); }
+    .btn-primary:active { transform: scale(0.96); box-shadow: none; }
 
+    .btn-secondary {
+      background: var(--bg-card2);
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 8px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+    .btn-secondary:hover { background: var(--bg-hover); border-color: var(--border-light); color: var(--text); }
+    .btn-secondary:active { transform: scale(0.96); }
+
+    .btn-copy {
+      background: var(--green);
+      color: #0a1a10;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 18px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: filter 0.15s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .btn-copy:hover { filter: brightness(1.1); }
+    .btn-copy:active { transform: scale(0.96); }
+
+    /* ===== SELECT ===== */
+    .select-custom {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      -webkit-appearance: auto;
+    }
+    .select-custom:focus { border-color: var(--accent); }
+    .select-custom option { background: #1a1d28; }
+    .select-custom optgroup { background: #13151d; color: var(--text-dim); }
+
+    /* ===== CHECKBOX ===== */
+    .check-group { display: flex; flex-wrap: wrap; gap: 7px; }
     .check-label {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: var(--pink-soft);
-      border: 2px solid var(--pink-border);
-      border-radius: 10px;
-      padding: 6px 12px;
-      font-size: 14px;
+      gap: 7px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--text-mid);
       cursor: pointer;
       transition: all 0.15s;
       user-select: none;
     }
-    .check-label:hover { background: var(--pink-light); border-color: var(--pink-primary); }
+    .check-label:hover { background: var(--bg-hover); border-color: var(--border-light); color: var(--text); }
     .check-label input[type="checkbox"] {
-      accent-color: var(--pink-dark);
-      width: 16px;
-      height: 16px;
+      accent-color: var(--accent);
+      width: 15px; height: 15px;
       cursor: pointer;
     }
-
-    /* ===== SELECT ===== */
-    .select-custom {
-      background: var(--input-bg);
-      border: 2px solid var(--input-border);
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-dark);
-      outline: none;
-      cursor: pointer;
-      transition: border-color 0.2s;
+    .check-label:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--bg-card2);
+      color: var(--text);
     }
-    .select-custom:focus { border-color: var(--pink-primary); }
 
     /* ===== OUTPUT ===== */
     .output-box {
-      background: var(--input-bg);
-      border: 2px solid var(--input-border);
-      border-radius: 12px;
-      padding: 12px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
       font-family: 'Courier New', monospace;
-      font-size: 13px;
-      color: var(--text-dark);
-      min-height: 60px;
+      font-size: 12px;
+      color: var(--text-mid);
+      min-height: 64px;
       word-break: break-all;
-      line-height: 1.6;
+      line-height: 1.7;
       white-space: pre-wrap;
       width: 100%;
+      transition: border-color 0.2s;
     }
-
-    /* ===== TABS (mode) ===== */
-    .tab-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .tab-btn {
-      background: var(--pink-soft);
-      border: 2px solid var(--pink-border);
-      border-radius: 10px;
-      padding: 7px 16px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text-mid);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .tab-btn:hover { background: var(--pink-light); }
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--pink-primary), var(--pink-dark));
-      color: white;
-      border-color: var(--pink-dark);
-      box-shadow: 0 3px 10px var(--shadow-strong);
-    }
+    .output-box:hover { border-color: var(--border-light); }
 
     /* ===== HISTORY ===== */
     .history-item {
-      background: var(--pink-soft);
-      border: 1.5px solid var(--pink-border);
-      border-radius: 10px;
-      padding: 8px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 9px 13px;
       font-family: 'Courier New', monospace;
       font-size: 12px;
-      color: var(--text-dark);
+      color: var(--text-mid);
       word-break: break-all;
       cursor: pointer;
       transition: all 0.15s;
@@ -445,397 +631,492 @@
       justify-content: space-between;
       gap: 8px;
     }
-    .history-item:hover { background: var(--pink-light); border-color: var(--pink-primary); }
+    .history-item:hover { background: var(--bg-hover); border-color: var(--border-light); }
 
     /* ===== TOAST ===== */
     #toast {
       position: fixed;
-      bottom: 28px;
+      bottom: 32px;
       left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: linear-gradient(135deg, var(--pink-primary), var(--pink-dark));
-      color: white;
-      padding: 10px 24px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border-light);
+      color: var(--text);
+      padding: 11px 24px;
       border-radius: 999px;
       font-weight: 800;
-      font-size: 14px;
-      box-shadow: 0 6px 24px var(--shadow-strong);
+      font-size: 13px;
+      box-shadow: 0 8px 30px var(--shadow);
       z-index: 9999;
       transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
       opacity: 0;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    #toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast .toast-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
     }
 
-    /* ===== WARNING ===== */
+    /* ===== MISC ===== */
+    .field-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+    .flex-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .flex-col  { display: flex; flex-direction: column; gap: 10px; }
+    .section-gap { margin-bottom: 16px; }
+
+    .num-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      width: 64px;
+      text-align: center;
+      outline: none;
+      font-family: 'Nunito', sans-serif;
+    }
+    .num-input:focus { border-color: var(--accent); }
+
     .warning-text {
-      color: #ef4444;
-      font-size: 13px;
+      color: var(--red);
+      font-size: 12px;
       font-weight: 700;
-      margin-top: 6px;
+      margin-top: 7px;
       display: none;
+    }
+
+    #iridium-warning {
+      display: none;
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .info-badge {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 11px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-dim);
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
     }
 
     /* ===== FOOTER ===== */
     .site-footer {
       text-align: center;
-      padding: 24px 16px;
-      color: var(--text-light);
-      font-size: 13px;
+      padding: 28px 16px;
+      color: var(--text-dim);
+      font-size: 12px;
       font-weight: 700;
-      border-top: 2px solid var(--card-border);
+      border-top: 1px solid var(--border);
       margin-top: 10px;
+      position: relative;
+      z-index: 1;
     }
-    .site-footer span { color: var(--pink-dark); }
+    .site-footer a { color: var(--accent); text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
 
-    /* ===== LABEL ===== */
-    .field-label {
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--text-mid);
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    /* ===== LORE/MOTD TEXTAREA ===== */
-    .textarea-main {
-      font-family: 'Nunito', sans-serif;
-      background: var(--input-bg);
-      border: 2px solid var(--input-border);
-      border-radius: 12px;
-      padding: 10px 16px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-dark);
-      width: 100%;
-      resize: vertical;
-      min-height: 80px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .textarea-main:focus {
-      border-color: var(--pink-primary);
-      box-shadow: 0 0 0 3px rgba(255,110,180,0.2);
+    /* ===== TWEMOJI ===== */
+    img.emoji {
+      height: 1em;
+      width: 1em;
+      margin: 0 0.05em 0 0.1em;
+      vertical-align: -0.1em;
     }
 
-    /* === LORE PREVIEW === */
-    #lore-text, #motd-preview {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 11px;
-      text-align: left;
-      word-break: break-all;
-      line-height: 2;
-    }
-
-    /* === ANIM SECTION === */
-    .anim-preview {
-      font-family: 'Press Start 2P', monospace;
-      font-size: clamp(12px, 2vw, 18px);
-      letter-spacing: 2px;
-      word-break: break-all;
-      line-height: 1.6;
-    }
-
-    /* glitter effect on preview */
-    @keyframes glitter {
-      0%   { filter: brightness(1); }
-      50%  { filter: brightness(1.15) drop-shadow(0 0 6px rgba(255,110,180,0.6)); }
-      100% { filter: brightness(1); }
-    }
-    .preview-box:hover #coloredNick,
-    .preview-box:hover #lore-text,
-    .preview-box:hover #motd-preview {
-      animation: glitter 1.5s ease-in-out infinite;
-    }
-
-    /* num colors input */
-    .num-input {
-      background: var(--input-bg);
-      border: 2px solid var(--input-border);
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--text-dark);
-      width: 60px;
-      text-align: center;
-      outline: none;
-    }
-    .num-input:focus { border-color: var(--pink-primary); }
-
-    /* row flex helpers */
-    .flex-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .flex-col { display: flex; flex-direction: column; gap: 10px; }
-
-    /* section divider */
-    .section-gap { margin-bottom: 14px; }
-
-    /* pink badge */
-    .badge {
-      background: linear-gradient(135deg, #ffd6ec, #ffb3d9);
-      color: var(--pink-dark);
-      border: 1.5px solid var(--pink-border);
-      border-radius: 999px;
-      padding: 2px 10px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    /* responsive */
-    @media (max-width: 600px) {
-      .color-card { width: 76px; }
-      .btn-add-color { width: 76px; height: 76px; }
-    }
-
-    /* Sparkle float particles */
+    /* ===== PARTICLES ===== */
     .particle {
       position: fixed;
       pointer-events: none;
-      font-size: 16px;
       animation: particleFly linear forwards;
       z-index: 0;
       opacity: 0;
     }
     @keyframes particleFly {
-      0%   { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-      100% { transform: translateY(-120px) rotate(180deg); opacity: 0; }
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+      100% { transform: translateY(-140px) rotate(200deg) scale(0.5); opacity: 0; }
     }
 
-    /* iridium warning */
-    #iridium-warning {
-      display: none;
-      color: #f59e0b;
-      font-size: 12px;
-      font-weight: 800;
-      margin-top: 6px;
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      .color-card { width: 76px; }
+      .btn-add-color { width: 76px; height: 76px; }
+      .header-inner { padding: 14px 18px; gap: 12px; }
+      .site-title { font-size: 11px; }
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-root); }
+    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+    /* Accent line top */
+    .accent-line {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+      border-radius: 999px;
+      margin: 0 20px 0;
+      opacity: 0.6;
     }
   </style>
 </head>
 <body>
 
-<!-- Floating particles container -->
 <div id="particles-container" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;"></div>
 
+<div class="accent-line"></div>
 <div class="container-main">
 
   <!-- HEADER -->
   <div class="site-header">
-    <div class="logo-wrap">
-      <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-      <div>
+    <div class="header-inner">
+      <div class="logo-icon">⛏️</div>
+      <div class="header-text">
         <div class="site-title">Minecraft HEX<br>Color Generator</div>
-        <div class="site-subtitle">✨ Tạo màu gradient đẹp cho server Minecraft của bạn ✨</div>
+        <div class="site-subtitle">Tạo màu gradient đẹp cho Minecraft server của bạn</div>
       </div>
     </div>
-    <div class="sparkle-row">
-      <span>🌸</span><span>💎</span><span>🎀</span><span>💗</span><span>✨</span><span>🌷</span><span>💞</span><span>🎀</span><span>💎</span><span>🌸</span>
+    <div class="badge-row">
+      <div class="header-badge">✦ <span>HEX Gradient</span></div>
+      <div class="header-badge">✦ <span>Multi-Format</span></div>
+      <div class="header-badge">✦ <span>MinhSoora</span></div>
     </div>
   </div>
 
-  <!-- MODE TABS -->
+  <!-- MODE SELECTOR -->
   <div class="card">
-    <div class="card-legend">🎮 Chế Độ</div>
-    <div class="tab-group">
-      <button class="tab-btn active" id="tab-text" onclick="switchMode(1)">📝 Văn Bản</button>
-      <button class="tab-btn" id="tab-lore" onclick="switchMode(2)">🏹 Lore</button>
-      <button class="tab-btn" id="tab-motd" onclick="switchMode(3)">🎀 MOTD</button>
+    <div class="card-header">
+      <div class="card-legend">
+        <div class="legend-icon">🎮</div>
+        CHẾ ĐỘ HIỂN THỊ
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="switchMode(1)">📝 Văn Bản</button>
+        <button class="tab-btn" onclick="switchMode(2)">🏹 Lore</button>
+        <button class="tab-btn" onclick="switchMode(3)">📡 MOTD</button>
+      </div>
     </div>
   </div>
 
   <!-- PREVIEW -->
   <div class="card">
-    <div class="card-legend">👁️ Xem Trước</div>
-
-    <!-- Text mode -->
-    <div id="preview-text">
-      <div class="preview-box">
-        <span id="coloredNick">Gõ gì đó vào...</span>
+    <div class="card-header">
+      <div class="card-legend">
+        <div class="legend-icon">👁</div>
+        XEM TRƯỚC
       </div>
-      <input type="text" class="input-main" id="nickname" placeholder="Nhập văn bản của bạn tại đây..." oninput="updateOutputText()" maxlength="200" value="MinhSoora">
     </div>
+    <div class="card-body">
 
-    <!-- Lore mode -->
-    <div id="preview-lore" style="display:none;">
-      <div class="preview-box" style="flex-direction:column;align-items:flex-start;">
-        <div id="lore-text"></div>
+      <!-- Text mode -->
+      <div id="preview-text">
+        <div class="preview-box">
+          <span id="coloredNick">MinhSoora</span>
+        </div>
+        <input type="text" class="input-main" id="nickname"
+          placeholder="Nhập văn bản của bạn tại đây..."
+          oninput="updateOutputText()" maxlength="200" value="MinhSoora">
       </div>
-      <textarea class="textarea-main" id="lore-input" placeholder="Nhập nhiều dòng lore (mỗi dòng là 1 dòng lore)..." oninput="updateOutputText(this)" rows="3">Dòng lore thứ nhất
+
+      <!-- Lore mode -->
+      <div id="preview-lore" style="display:none;">
+        <div class="preview-box" style="flex-direction:column;align-items:flex-start;">
+          <div id="lore-text"></div>
+        </div>
+        <textarea class="textarea-main" id="lore-input"
+          placeholder="Nhập nhiều dòng lore (mỗi dòng là 1 dòng lore)..."
+          oninput="updateOutputText(this)" rows="3">Dòng lore thứ nhất
 Dòng lore thứ hai</textarea>
-    </div>
-
-    <!-- MOTD mode -->
-    <div id="preview-motd" style="display:none;">
-      <div class="preview-box" style="background: linear-gradient(135deg, #1a1a2e, #0d0d1a); flex-direction:column;">
-        <div id="motd-preview"></div>
       </div>
-      <textarea class="textarea-main" id="motd-input" placeholder="Nhập MOTD (tối đa 2 dòng)..." oninput="updateOutputText(this)" rows="2" maxlength="200">Server của tôi
+
+      <!-- MOTD mode -->
+      <div id="preview-motd" style="display:none;">
+        <div class="preview-box" style="flex-direction:column;background:#070810;">
+          <div id="motd-preview"></div>
+        </div>
+        <textarea class="textarea-main" id="motd-input"
+          placeholder="Nhập MOTD (tối đa 2 dòng)..."
+          oninput="updateOutputText(this)" rows="2" maxlength="200">Server của tôi
 Chào mừng đến với thế giới!</textarea>
+      </div>
+
     </div>
   </div>
 
   <!-- COLOR PALETTE -->
   <div class="card">
-    <div class="card-legend">🎨 Bảng Màu</div>
-
-    <div class="flex-row section-gap">
-      <label class="field-label" style="margin:0">Số màu:</label>
-      <input type="number" id="numOfColors" class="num-input" value="3" min="2" max="20" onchange="handleNumColors(this.value)">
-      <span class="badge">Tối đa 20 màu</span>
-    </div>
-
-    <div id="hexColors" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-bottom:12px;"></div>
-
-    <div class="flex-row" style="margin-top:4px;">
-      <label class="field-label" style="margin:0">Preset:</label>
-      <select class="select-custom" id="preset-select" onchange="loadPreset(this.value)">
-        <option value="">— Chọn preset —</option>
-        <option value="Rainbow">🌈 Cầu vồng</option>
-        <option value="Fire">🔥 Lửa</option>
-        <option value="Sweet Morning">🌸 Sáng ngọt</option>
-        <option value="Deep Space">🌌 Vũ trụ</option>
-        <option value="Sunset">🌅 Hoàng hôn</option>
-        <option value="Rose">🌹 Hồng nhạt</option>
-        <option value="Candy">🍬 Kẹo ngọt</option>
-        <option value="Instagram">📸 Instagram</option>
-        <option value="Amethyst">💜 Thạch anh</option>
-        <option value="JShine">✨ JShine</option>
-        <option value="Cosmic Fusion">🌠 Cosmic</option>
-        <option value="TikTok">🎵 TikTok</option>
-        <option value="Peach">🍑 Đào</option>
-        <option value="Party">🎉 Tiệc</option>
-        <option value="Quepal">🌿 Quepal</option>
-        <option value="Mango">🥭 Xoài</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- STYLING & TOOLS -->
-  <div class="card">
-    <div class="card-legend">✨ Định Dạng & Công Cụ</div>
-
-    <div class="section-gap">
-      <label class="field-label">Kiểu chữ:</label>
-      <div class="check-group">
-        <label class="check-label"><input type="checkbox" id="bold" onchange="updateOutputText()"> <b>Đậm</b></label>
-        <label class="check-label"><input type="checkbox" id="italics" onchange="updateOutputText()"> <i>Nghiêng</i></label>
-        <label class="check-label"><input type="checkbox" id="underline" onchange="updateOutputText()"> <u>Gạch dưới</u></label>
-        <label class="check-label"><input type="checkbox" id="strike" onchange="updateOutputText()"> <s>Gạch ngang</s></label>
+    <div class="card-header">
+      <div class="card-legend">
+        <div class="legend-icon">🎨</div>
+        BẢNG MÀU
       </div>
     </div>
+    <div class="card-body">
 
-    <div class="section-gap">
-      <label class="field-label">Hành động:</label>
-      <div class="flex-row">
-        <button class="btn-outline" onclick="rotateColors(-1)">⬅️ Xoay trái</button>
-        <button class="btn-outline" onclick="reverseColors()">🔄 Đảo ngược</button>
-        <button class="btn-outline" onclick="rotateColors(1)">➡️ Xoay phải</button>
-      </div>
-    </div>
-
-    <div>
-      <label class="field-label">Hoạt ảnh gradient:</label>
-      <div class="flex-row">
-        <select class="select-custom" id="anim-direction">
-          <option value="right">➡️ Sang phải</option>
-          <option value="left">⬅️ Sang trái</option>
+      <div class="flex-row section-gap">
+        <label class="field-label" style="margin:0;">Số màu:</label>
+        <input type="number" id="numOfColors" class="num-input" value="3" min="2" max="20"
+          onchange="handleNumColors(this.value)">
+        <span class="info-badge">Tối đa 20</span>
+        <label class="field-label" style="margin:0;margin-left:auto;">Preset:</label>
+        <select class="select-custom" id="preset-select" onchange="loadPreset(this.value)">
+          <option value="">— Chọn preset —</option>
+          <option value="Rainbow">🌈 Cầu vồng</option>
+          <option value="Fire">🔥 Lửa</option>
+          <option value="Ocean">🌊 Đại dương</option>
+          <option value="Sweet Morning">🌸 Sáng ngọt</option>
+          <option value="Deep Space">🌌 Vũ trụ</option>
+          <option value="Sunset">🌅 Hoàng hôn</option>
+          <option value="Rose">🌹 Hồng nhạt</option>
+          <option value="Candy">🍬 Kẹo ngọt</option>
+          <option value="Instagram">📸 Instagram</option>
+          <option value="Amethyst">💜 Thạch anh</option>
+          <option value="JShine">✨ JShine</option>
+          <option value="Cosmic Fusion">🌠 Cosmic</option>
+          <option value="TikTok">🎵 TikTok</option>
+          <option value="Peach">🍑 Đào</option>
+          <option value="Party">🎉 Tiệc</option>
+          <option value="Quepal">🌿 Quepal</option>
+          <option value="Mango">🥭 Xoài</option>
+          <option value="Neon">💚 Neon</option>
+          <option value="Midnight">🌙 Đêm khuya</option>
         </select>
-        <button class="btn-pink" onclick="generateAnimation()">🎬 Tạo hoạt ảnh</button>
       </div>
-    </div>
-  </div>
 
-  <!-- CONFIGURATION -->
-  <div class="card">
-    <div class="card-legend">🛠️ Cấu Hình</div>
+      <div id="hexColors" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;"></div>
+      <p style="font-size:11px;color:var(--text-dim);margin-top:10px;font-weight:700;">
+        💡 Kéo thả để sắp xếp lại thứ tự màu sắc
+      </p>
 
-    <div class="flex-row section-gap">
-      <label class="field-label" style="margin:0">Định dạng:</label>
-      <select class="select-custom" id="output-format" onchange="updateOutputText()">
-        <optgroup label="— Định dạng phổ biến —">
-          <option value="a0">Default &#rrggbb</option>
-          <option value="a1">Chat &lt;#rrggbb&gt;</option>
-          <option value="a2">Legacy &x&r&r&g&g&b&b</option>
-          <option value="a3">Nick &#rrggbb</option>
-          <option value="a6">Console §x§r§r§g§g§b§b</option>
-          <option value="a7">BBCode [COLOR=#rrggbb]</option>
-          <option value="a8">MOTD (\u00A7x)</option>
-        </optgroup>
-        <optgroup label="— API phổ biến —">
-          <option value="a11">Adventure Gradient</option>
-          <option value="a12">Iridium Gradient</option>
-        </optgroup>
-        <optgroup label="— Định dạng khác —">
-          <option value="a13">Brackets {#rrggbb}</option>
-          <option value="a14">Simple #rrggbb</option>
-          <option value="a15">Percentage %#rrggbb%</option>
-        </optgroup>
-      </select>
     </div>
-    <div id="iridium-warning">⚠️ Định dạng Iridium chỉ hỗ trợ 2 màu!</div>
   </div>
 
   <!-- OUTPUT -->
   <div class="card">
-    <div class="card-legend">📝 Mã Đầu Ra</div>
-    <div id="outputText" class="output-box">Kết quả mã sẽ hiển thị ở đây...</div>
-    <div class="warning-text" id="length-warning">⚠️ Mã quá dài cho chat (vượt 256 ký tự)!</div>
-    <div class="flex-row" style="margin-top:10px;">
-      <button class="btn-pink" onclick="copyOutput()">📋 Sao chép mã</button>
-    </div>
-  </div>
-
-  <!-- HISTORY -->
-  <div class="card">
-    <div class="card-legend">📚 Lịch Sử</div>
-    <div class="flex-row section-gap">
-      <button class="btn-pink" onclick="saveToHistory()">💾 Lưu kiểu hiện tại</button>
-      <button class="btn-outline" onclick="clearHistory()">🗑️ Xóa lịch sử</button>
-    </div>
-    <div id="history-list" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
-      <div style="color:var(--text-light);font-size:13px;font-weight:700;">Lịch sử trống.</div>
-    </div>
-  </div>
-
-  <!-- DECODE -->
-  <div class="card">
-    <div class="card-legend">🧬 Giải Mã Gradient</div>
-    <p style="font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:10px;">Dán mã gradient để trích xuất màu sắc đã dùng:</p>
-    <div class="flex-col">
-      <input type="text" class="input-main" id="decode-input" placeholder="Dán mã gradient cần giải mã...">
-      <div class="flex-row">
-        <button class="btn-pink" onclick="decodeGradient()">🧬 Giải mã</button>
-        <button class="btn-outline" onclick="decodeAndLoad()">📥 Giải mã & Tải</button>
+    <div class="card-header">
+      <div class="card-legend">
+        <div class="legend-icon">📝</div>
+        MÃ ĐẦU RA
       </div>
-      <div id="decode-output" class="output-box" style="display:none;"></div>
+    </div>
+    <div class="card-body">
+      <div id="outputText" class="output-box">Kết quả mã sẽ hiển thị ở đây...</div>
+      <div class="warning-text" id="length-warning">⚠️ Mã quá dài cho chat (vượt 256 ký tự)!</div>
+      <div class="flex-row" style="margin-top:12px;">
+        <button class="btn-copy" onclick="copyOutput()">📋 Sao chép mã</button>
+        <button class="btn-secondary" onclick="saveToHistory()">💾 Lưu vào lịch sử</button>
+      </div>
     </div>
   </div>
 
-  <!-- DATA MANAGEMENT -->
+  <!-- SETTINGS: FORMAT & STYLES -->
   <div class="card">
-    <div class="card-legend">💾 Quản Lý Dữ Liệu</div>
-    <div class="flex-row section-gap">
-      <button class="btn-pink" onclick="exportOptions()">⚙️ Xuất cài đặt</button>
+    <div class="card-header collapsible" onclick="toggleCard(this)">
+      <div class="card-legend">
+        <div class="legend-icon">⚙️</div>
+        CẤU HÌNH & ĐỊNH DẠNG
+      </div>
+      <div class="collapse-arrow">▼</div>
     </div>
-    <div style="margin-top:10px;">
-      <label class="field-label">Nhập cài đặt đã xuất:</label>
-      <input type="text" class="input-main" id="import-input" placeholder="Dán chuỗi xuất và nhấn Enter để nhập..." onkeydown="if(event.key==='Enter') importOptions(this)">
+    <div class="card-body">
+
+      <div class="section-gap">
+        <label class="field-label">Định dạng plugin:</label>
+        <div class="flex-row">
+          <select class="select-custom" id="output-format" onchange="updateOutputText()" style="flex:1;max-width:320px;">
+            <optgroup label="— Định dạng phổ biến —">
+              <option value="a0">Default &#rrggbb</option>
+              <option value="a1">Chat &lt;#rrggbb&gt;</option>
+              <option value="a2">Legacy &x&r&r&g&g&b&b</option>
+              <option value="a3">Nick &#rrggbb</option>
+              <option value="a6">Console §x§r§r§g§g§b§b</option>
+              <option value="a7">BBCode [COLOR=#rrggbb]</option>
+              <option value="a8">MOTD (\u00A7x)</option>
+            </optgroup>
+            <optgroup label="— API phổ biến —">
+              <option value="a11">Adventure Gradient</option>
+              <option value="a12">Iridium Gradient</option>
+            </optgroup>
+            <optgroup label="— Định dạng khác —">
+              <option value="a13">Brackets {#rrggbb}</option>
+              <option value="a14">Simple #rrggbb</option>
+              <option value="a15">Percentage %#rrggbb%</option>
+            </optgroup>
+          </select>
+        </div>
+        <div id="iridium-warning">⚠️ Định dạng Iridium chỉ hỗ trợ 2 màu!</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section-gap">
+        <label class="field-label">Kiểu chữ:</label>
+        <div class="check-group">
+          <label class="check-label"><input type="checkbox" id="bold" onchange="updateOutputText()"> <b>Đậm</b></label>
+          <label class="check-label"><input type="checkbox" id="italics" onchange="updateOutputText()"> <i>Nghiêng</i></label>
+          <label class="check-label"><input type="checkbox" id="underline" onchange="updateOutputText()"> <u>Gạch dưới</u></label>
+          <label class="check-label"><input type="checkbox" id="strike" onchange="updateOutputText()"> <s>Gạch ngang</s></label>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div>
+        <label class="field-label">Công cụ màu sắc:</label>
+        <div class="flex-row">
+          <button class="btn-secondary" onclick="rotateColors(-1)">⬅ Xoay trái</button>
+          <button class="btn-secondary" onclick="reverseColors()">🔄 Đảo ngược</button>
+          <button class="btn-secondary" onclick="rotateColors(1)">➡ Xoay phải</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
-</div>
+  <!-- SETTINGS: ANIMATION -->
+  <div class="card">
+    <div class="card-header collapsible" onclick="toggleCard(this)">
+      <div class="card-legend">
+        <div class="legend-icon">🎬</div>
+        HOẠT ẢNH GRADIENT
+      </div>
+      <div class="collapse-arrow">▼</div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--text-dim);font-weight:700;margin-bottom:12px;">
+        Tạo nhiều khung hình để tạo hiệu ứng chuyển động cho tên/prefix trong Minecraft.
+      </p>
+      <div class="flex-row">
+        <label class="field-label" style="margin:0;">Hướng:</label>
+        <select class="select-custom" id="anim-direction">
+          <option value="right">→ Sang phải</option>
+          <option value="left">← Sang trái</option>
+        </select>
+        <button class="btn-primary" onclick="generateAnimation()">🎬 Tạo hoạt ảnh</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS: HISTORY -->
+  <div class="card">
+    <div class="card-header collapsible" onclick="toggleCard(this)">
+      <div class="card-legend">
+        <div class="legend-icon">📚</div>
+        LỊCH SỬ
+      </div>
+      <div class="collapse-arrow">▼</div>
+    </div>
+    <div class="card-body">
+      <div class="flex-row section-gap">
+        <button class="btn-secondary" onclick="clearHistory()">🗑 Xóa tất cả</button>
+      </div>
+      <div id="history-list" style="display:flex;flex-direction:column;gap:6px;">
+        <div style="color:var(--text-dim);font-size:12px;font-weight:700;">Lịch sử trống.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS: DECODE -->
+  <div class="card">
+    <div class="card-header collapsible" onclick="toggleCard(this)">
+      <div class="card-legend">
+        <div class="legend-icon">🧬</div>
+        GIẢI MÃ GRADIENT
+      </div>
+      <div class="collapse-arrow">▼</div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--text-dim);font-weight:700;margin-bottom:12px;">
+        Dán mã gradient để trích xuất các màu sắc đã dùng:
+      </p>
+      <div class="flex-col">
+        <input type="text" class="input-main" id="decode-input"
+          placeholder="Dán mã gradient cần giải mã...">
+        <div class="flex-row">
+          <button class="btn-primary" onclick="decodeGradient()">🧬 Giải mã</button>
+          <button class="btn-secondary" onclick="decodeAndLoad()">📥 Giải mã &amp; Tải</button>
+        </div>
+        <div id="decode-threshold" class="flex-row">
+          <label class="field-label" style="margin:0;">Ngưỡng (threshold):</label>
+          <input type="number" id="decode-threshold-val" class="num-input" value="40" min="1" max="255">
+          <span style="font-size:11px;color:var(--text-dim);font-weight:700;">Alt+Click +10</span>
+        </div>
+        <div id="decode-output" class="output-box" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS: DATA MANAGEMENT -->
+  <div class="card">
+    <div class="card-header collapsible" onclick="toggleCard(this)">
+      <div class="card-legend">
+        <div class="legend-icon">💾</div>
+        XUẤT / NHẬP DỮ LIỆU
+      </div>
+      <div class="collapse-arrow">▼</div>
+    </div>
+    <div class="card-body">
+      <div class="flex-row section-gap">
+        <button class="btn-primary" onclick="exportOptions()">⚙️ Xuất cài đặt</button>
+      </div>
+      <label class="field-label">Nhập cài đặt đã xuất:</label>
+      <input type="text" class="input-main" id="import-input"
+        placeholder="Dán chuỗi xuất và nhấn Enter để nhập..."
+        onkeydown="if(event.key==='Enter') importOptions(this)">
+    </div>
+  </div>
+
+</div><!-- /container-main -->
 
 <!-- FOOTER -->
 <div class="site-footer">
-  ✨ Made by <span>MinhSoora</span> ✨ &nbsp;|&nbsp; 🌸 Công cụ Minecraft HEX Color Generator tiếng Việt 🌸
+  ⚡ Made by <a href="#">MinhSoora</a> &nbsp;·&nbsp; Minecraft HEX Color Generator
 </div>
 
 <!-- TOAST -->
-<div id="toast">✅ Đã sao chép!</div>
+<div id="toast"><div class="toast-dot"></div><span id="toast-msg">OK</span></div>
 
 <script>
+/* ========================================================
+   TWEMOJI INIT
+   ======================================================== */
+function parseTwemoji(el) {
+  if (window.twemoji) {
+    twemoji.parse(el, {
+      folder: 'svg',
+      ext: '.svg',
+      base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', () => parseTwemoji(document.body));
+
 /* ========================================================
    CORE DATA
    ======================================================== */
@@ -843,22 +1124,25 @@ let currentMode = 1;
 let historyList = [];
 
 const presets = {
-  "Rainbow":        ["FF0000","FF7F00","FFFF00","00FF00","0000FF","4B0082","9400D3"],
-  "Fire":           ["A10100","DA3604","FE650D","FFC11F","FFF75D"],
-  "Sweet Morning":  ["FF5F6D","FFC371"],
-  "Deep Space":     ["000000","434343"],
-  "Sunset":         ["FF512F","DD2476"],
-  "Rose":           ["F4C4F3","FC67FA"],
-  "Candy":          ["009FFF","ec2F4B"],
-  "Instagram":      ["833ab4","fd1d1d","fcb045"],
-  "Amethyst":       ["9D50BB","6E48AA"],
-  "JShine":         ["12c2e9","c471ed","f64f59"],
-  "Cosmic Fusion":  ["ff00cc","333399"],
-  "TikTok":         ["FF0050","4B0018","00F2EA"],
-  "Peach":          ["ED4264","FFEDBC"],
-  "Party":          ["3A3AAE","7719B8","FF00CC"],
-  "Quepal":         ["11998E","38EF7D"],
-  "Mango":          ["FFE259","FFA751"],
+  "Rainbow":       ["FF0000","FF7F00","FFFF00","00FF00","0000FF","4B0082","9400D3"],
+  "Fire":          ["A10100","DA3604","FE650D","FFC11F","FFF75D"],
+  "Ocean":         ["0077be","00bfff","7fffd4"],
+  "Sweet Morning": ["FF5F6D","FFC371"],
+  "Deep Space":    ["000000","434343"],
+  "Sunset":        ["FF512F","DD2476"],
+  "Rose":          ["F4C4F3","FC67FA"],
+  "Candy":         ["009FFF","ec2F4B"],
+  "Instagram":     ["833ab4","fd1d1d","fcb045"],
+  "Amethyst":      ["9D50BB","6E48AA"],
+  "JShine":        ["12c2e9","c471ed","f64f59"],
+  "Cosmic Fusion": ["ff00cc","333399"],
+  "TikTok":        ["FF0050","4B0018","00F2EA"],
+  "Peach":         ["ED4264","FFEDBC"],
+  "Party":         ["3A3AAE","7719B8","FF00CC"],
+  "Quepal":        ["11998E","38EF7D"],
+  "Mango":         ["FFE259","FFA751"],
+  "Neon":          ["00ff87","60efff"],
+  "Midnight":      ["232526","414345"],
 };
 
 const formats = {
@@ -876,8 +1160,7 @@ const formats = {
   a15: { template: '%#$1$2$3$4$5$6%$f$c', formatChar: '&', maxLength: null },
 };
 
-// Saved colors array (hex strings without #)
-let savedColors = ['ff6eb4','d63384','ff9dce'];
+let savedColors = ['5b8cff','7c5fff','a78bfa'];
 
 /* ========================================================
    COLOR MATH
@@ -927,7 +1210,7 @@ class Gradient {
   }
   next() {
     if (this.steps < 1) return this.colors[0];
-    if (this.steps < this.colors.length) { return this.colors[this.step++]; }
+    if (this.steps < this.colors.length) return this.colors[this.step++];
     const adj = Math.round(Math.abs(((2 * Math.asin(Math.sin(this.step * (Math.PI / (2 * this.steps))))) / Math.PI) * this.steps));
     let color;
     if (this.gradients.length < 2) {
@@ -940,6 +1223,14 @@ class Gradient {
     this.step++;
     return color;
   }
+}
+
+/* ========================================================
+   COLLAPSE / EXPAND
+   ======================================================== */
+function toggleCard(header) {
+  const card = header.closest('.card');
+  card.classList.toggle('collapsed');
 }
 
 /* ========================================================
@@ -962,22 +1253,18 @@ function renderPalette() {
     `;
     container.appendChild(card);
   });
-
-  // Add button
   const addBtn = document.createElement('button');
   addBtn.className = 'btn-add-color';
   addBtn.title = 'Thêm màu';
   addBtn.innerHTML = '+';
   addBtn.onclick = addColor;
   container.appendChild(addBtn);
-
   setupDragDrop();
   document.getElementById('numOfColors').value = savedColors.length;
 }
 
 function onColorChange(index, value) {
   savedColors[index] = value.replace('#', '');
-  // update hex text display
   const card = document.querySelectorAll('.color-card')[index];
   if (card) card.querySelector('.hex-display').value = value.replace('#','').toUpperCase();
   updateOutputText();
@@ -1028,7 +1315,6 @@ function getColorsRGB() {
 function setupDragDrop() {
   const cards = document.querySelectorAll('.color-card');
   let dragSrc = null;
-
   cards.forEach(card => {
     card.addEventListener('dragstart', e => {
       dragSrc = parseInt(card.getAttribute('data-index'));
@@ -1039,10 +1325,7 @@ function setupDragDrop() {
       card.classList.remove('dragging');
       document.querySelectorAll('.color-card').forEach(c => c.classList.remove('drop-target'));
     });
-    card.addEventListener('dragover', e => {
-      e.preventDefault();
-      card.classList.add('drop-target');
-    });
+    card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drop-target'); });
     card.addEventListener('dragleave', () => card.classList.remove('drop-target'));
     card.addEventListener('drop', e => {
       e.preventDefault();
@@ -1063,15 +1346,15 @@ function setupDragDrop() {
    GRADIENT OUTPUT
    ======================================================== */
 function buildOutput(text, colorsList, format) {
-  const bold = document.getElementById('bold').checked;
-  const italic = document.getElementById('italics').checked;
+  const bold      = document.getElementById('bold').checked;
+  const italic    = document.getElementById('italics').checked;
   const underline = document.getElementById('underline').checked;
-  const strike = document.getElementById('strike').checked;
+  const strike    = document.getElementById('strike').checked;
 
   let colorsForGrad = colorsList;
   if (format.iridiumGradient) colorsForGrad = [colorsList[0], colorsList[colorsList.length-1]];
 
-  const chars = text.replace(/ /g, '');
+  const chars    = text.replace(/ /g, '');
   const gradient = new Gradient(colorsForGrad, chars.length || 1);
   let output = '';
   let charColors = [];
@@ -1082,15 +1365,15 @@ function buildOutput(text, colorsList, format) {
     if (char === ' ') { output += char; charColors.push(null); continue; }
     const hex = convertToHex(gradient.next());
     charColors.push(hex);
-    if (format.adventureGradient || format.iridiumGradient) { continue; }
+    if (format.adventureGradient || format.iridiumGradient) continue;
     let h = format.template;
     for (let n = 1; n <= 6; n++) h = h.replace(`$${n}`, hex.charAt(n-1));
     let fc = '';
     if (format.formatChar !== null && format.formatChar !== undefined) {
-      if (bold) fc += format.formatChar + 'l';
-      if (italic) fc += format.formatChar + 'o';
+      if (bold)      fc += format.formatChar + 'l';
+      if (italic)    fc += format.formatChar + 'o';
       if (underline) fc += format.formatChar + 'n';
-      if (strike) fc += format.formatChar + 'm';
+      if (strike)    fc += format.formatChar + 'm';
     }
     h = h.replace('$f', fc).replace('$c', char);
     if (i === 0) startIr = h.slice(2,8);
@@ -1099,7 +1382,7 @@ function buildOutput(text, colorsList, format) {
   }
 
   if (format.iridiumGradient) {
-    return { code: `<GRADIENT:${startIr || ''}>${text}</GRADIENT:${endIr || ''}>`, charColors };
+    return { code: `<GRADIENT:${startIr||''}>${text}</GRADIENT:${endIr||''}>`, charColors };
   } else if (format.adventureGradient) {
     let eff = '';
     if (bold) eff += '<b>'; if (italic) eff += '<i>';
@@ -1122,28 +1405,30 @@ function applyGradientToDOM(container, text, charColors) {
     const char = text.charAt(i);
     const span = document.createElement('span');
     if (char === ' ') { span.textContent = ' '; }
-    else { span.style.color = '#' + (charColors[ci] || 'ffffff'); span.textContent = char; ci++; }
+    else {
+      span.style.color = '#' + (charColors[ci] || 'ffffff');
+      span.textContent = char;
+      ci++;
+    }
     container.appendChild(span);
   }
 }
 
 /* ========================================================
-   UPDATE OUTPUT (main function)
+   UPDATE OUTPUT
    ======================================================== */
 function updateOutputText() {
-  const format = formats[document.getElementById('output-format').value] || formats['a0'];
+  const format     = formats[document.getElementById('output-format').value] || formats['a0'];
   const colorsList = getColorsRGB();
   const outputText = document.getElementById('outputText');
 
-  // iridium warning
   document.getElementById('iridium-warning').style.display = format.iridiumGradient ? 'block' : 'none';
 
   if (currentMode === 1) {
-    let text = document.getElementById('nickname').value || 'Gõ gì đó vào...';
+    const text = document.getElementById('nickname').value || 'Gõ gì đó vào...';
     const { code, charColors } = buildOutput(text, colorsList, format);
     outputText.textContent = code;
     applyGradientToDOM(document.getElementById('coloredNick'), text, charColors);
-    // length warning
     const warn = document.getElementById('length-warning');
     warn.style.display = (format.maxLength && code.length > format.maxLength) ? 'block' : 'none';
 
@@ -1198,6 +1483,7 @@ function loadPreset(name) {
   renderPalette();
   updateOutputText();
   document.getElementById('preset-select').value = '';
+  showToast('🎨 Đã tải preset ' + name);
 }
 
 function rotateColors(dir) {
@@ -1217,16 +1503,13 @@ function reverseColors() {
    ANIMATION GENERATOR
    ======================================================== */
 function generateAnimation() {
-  const text = document.getElementById('nickname').value || 'MinhSoora';
+  const text       = document.getElementById('nickname').value || 'MinhSoora';
   const colorsList = getColorsRGB();
-  const format = formats[document.getElementById('output-format').value] || formats['a0'];
-  const toRight = document.getElementById('anim-direction').value === 'right';
+  const format     = formats[document.getElementById('output-format').value] || formats['a0'];
+  const toRight    = document.getElementById('anim-direction').value === 'right';
   const outputText = document.getElementById('outputText');
-
-  const frames = [];
-  const extended = [...savedColors];
+  const frames     = [];
   const frameCount = savedColors.length;
-
   for (let f = 0; f < frameCount; f++) {
     const rotated = toRight
       ? [...savedColors.slice(f), ...savedColors.slice(0,f)]
@@ -1235,7 +1518,6 @@ function generateAnimation() {
     const { code } = buildOutput(text, colors, format);
     frames.push(`- "${code}"`);
   }
-
   outputText.textContent = frames.join('\r\n');
   showToast('🎬 Đã tạo hoạt ảnh!');
 }
@@ -1246,13 +1528,15 @@ function generateAnimation() {
 function copyOutput() {
   const text = document.getElementById('outputText').textContent;
   if (!text || text === 'Kết quả mã sẽ hiển thị ở đây...') return;
-  navigator.clipboard.writeText(text).then(() => showToast('📋 Đã sao chép!')).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('📋 Đã sao chép!');
-  });
+  navigator.clipboard.writeText(text)
+    .then(() => showToast('📋 Đã sao chép!'))
+    .catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('📋 Đã sao chép!');
+    });
 }
 
 /* ========================================================
@@ -1261,13 +1545,13 @@ function copyOutput() {
 function saveToHistory() {
   const format = document.getElementById('output-format').value;
   const entry = {
-    colors: [...savedColors],
+    colors:    [...savedColors],
     format,
-    bold: document.getElementById('bold').checked,
-    italic: document.getElementById('italics').checked,
+    bold:      document.getElementById('bold').checked,
+    italic:    document.getElementById('italics').checked,
     underline: document.getElementById('underline').checked,
-    strike: document.getElementById('strike').checked,
-    time: new Date().toLocaleTimeString('vi-VN'),
+    strike:    document.getElementById('strike').checked,
+    time:      new Date().toLocaleTimeString('vi-VN'),
   };
   historyList.unshift(entry);
   if (historyList.length > 20) historyList.pop();
@@ -1279,19 +1563,21 @@ function renderHistory() {
   const container = document.getElementById('history-list');
   container.innerHTML = '';
   if (historyList.length === 0) {
-    container.innerHTML = '<div style="color:var(--text-light);font-size:13px;font-weight:700;">Lịch sử trống.</div>';
+    container.innerHTML = '<div style="color:var(--text-dim);font-size:12px;font-weight:700;">Lịch sử trống.</div>';
     return;
   }
   historyList.forEach((entry, i) => {
-    const colorPreview = entry.colors.map(c => `<span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#${c.replace('#','')}"></span>`).join('');
+    const colorPreview = entry.colors.map(c =>
+      `<span style="display:inline-block;width:13px;height:13px;border-radius:3px;background:#${c.replace('#','')}"></span>`
+    ).join('');
     const div = document.createElement('div');
     div.className = 'history-item';
     div.innerHTML = `
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
         ${colorPreview}
-        <span style="font-size:11px;color:var(--text-light);font-family:Nunito,sans-serif;">${entry.format} · ${entry.time}</span>
+        <span style="font-size:11px;color:var(--text-dim);font-family:'Nunito',sans-serif;">${entry.format} · ${entry.time}</span>
       </div>
-      <button class="btn-outline" style="padding:4px 10px;font-size:12px;" onclick="loadHistory(${i})">▶ Tải</button>
+      <button class="btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="loadHistory(${i})">▶ Tải</button>
     `;
     container.appendChild(div);
   });
@@ -1302,10 +1588,10 @@ function loadHistory(i) {
   if (!entry) return;
   savedColors = [...entry.colors];
   document.getElementById('output-format').value = entry.format;
-  document.getElementById('bold').checked = entry.bold;
-  document.getElementById('italics').checked = entry.italic;
+  document.getElementById('bold').checked      = entry.bold;
+  document.getElementById('italics').checked   = entry.italic;
   document.getElementById('underline').checked = entry.underline;
-  document.getElementById('strike').checked = entry.strike;
+  document.getElementById('strike').checked    = entry.strike;
   renderPalette();
   updateOutputText();
   showToast('📂 Đã tải kiểu!');
@@ -1314,13 +1600,19 @@ function loadHistory(i) {
 function clearHistory() {
   historyList = [];
   renderHistory();
-  showToast('🗑️ Đã xóa lịch sử!');
+  showToast('🗑 Đã xóa lịch sử!');
 }
 
 /* ========================================================
    DECODE
    ======================================================== */
-function extractColors(str, threshold = 40) {
+function getThreshold(e) {
+  const el = document.getElementById('decode-threshold-val');
+  if (e && e.altKey) { el.value = Math.min(255, parseInt(el.value || 40) + 10); }
+  return parseInt(el.value) || 40;
+}
+
+function extractColors(str, threshold) {
   const regex = /#([0-9a-fA-F]{6})/g;
   let match;
   const points = [];
@@ -1334,9 +1626,10 @@ function extractColors(str, threshold = 40) {
   return points;
 }
 
-function decodeGradient() {
-  const input = document.getElementById('decode-input').value;
-  const colors = extractColors(input);
+function decodeGradient(e) {
+  const input  = document.getElementById('decode-input').value;
+  const thresh = getThreshold(e);
+  const colors = extractColors(input, thresh);
   if (colors.length === 0) { showToast('❌ Không tìm thấy màu!'); return; }
   const out = document.getElementById('decode-output');
   out.style.display = 'block';
@@ -1344,11 +1637,12 @@ function decodeGradient() {
   showToast('🧬 Đã giải mã ' + colors.length + ' màu!');
 }
 
-function decodeAndLoad() {
-  const input = document.getElementById('decode-input').value;
-  const colors = extractColors(input);
+function decodeAndLoad(e) {
+  const input  = document.getElementById('decode-input').value;
+  const thresh = getThreshold(e);
+  const colors = extractColors(input, thresh);
   if (colors.length === 0) { showToast('❌ Không tìm thấy màu!'); return; }
-  if (colors.length < 2) { showToast('⚠️ Cần ít nhất 2 màu!'); return; }
+  if (colors.length < 2)   { showToast('⚠️ Cần ít nhất 2 màu!'); return; }
   savedColors = colors;
   renderPalette();
   updateOutputText();
@@ -1360,12 +1654,12 @@ function decodeAndLoad() {
    ======================================================== */
 function exportOptions() {
   const data = {
-    format: document.getElementById('output-format').value,
-    colors: savedColors,
-    bold: document.getElementById('bold').checked,
-    italic: document.getElementById('italics').checked,
+    format:    document.getElementById('output-format').value,
+    colors:    savedColors,
+    bold:      document.getElementById('bold').checked,
+    italic:    document.getElementById('italics').checked,
     underline: document.getElementById('underline').checked,
-    strike: document.getElementById('strike').checked,
+    strike:    document.getElementById('strike').checked,
   };
   const str = btoa(JSON.stringify(data));
   navigator.clipboard.writeText(str).catch(() => {});
@@ -1377,11 +1671,11 @@ function importOptions(el) {
     const data = JSON.parse(atob(el.value));
     el.value = '';
     savedColors = data.colors.map(c => Array.isArray(c) ? convertToHex(c) : c.replace('#',''));
-    document.getElementById('output-format').value = data.format;
-    document.getElementById('bold').checked = data.bold;
-    document.getElementById('italics').checked = data.italic;
+    document.getElementById('output-format').value  = data.format;
+    document.getElementById('bold').checked      = data.bold;
+    document.getElementById('italics').checked   = data.italic;
     document.getElementById('underline').checked = data.underline;
-    document.getElementById('strike').checked = data.strike;
+    document.getElementById('strike').checked    = data.strike;
     renderPalette();
     updateOutputText();
     showToast('✅ Đã nhập cài đặt!');
@@ -1396,31 +1690,34 @@ function importOptions(el) {
    ======================================================== */
 let toastTimeout;
 function showToast(msg) {
+  document.getElementById('toast-msg').textContent = msg;
   const toast = document.getElementById('toast');
-  toast.textContent = msg;
   toast.classList.add('show');
   clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => toast.classList.remove('show'), 2200);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 2400);
 }
 
 /* ========================================================
-   FLOATING PARTICLES
+   PARTICLES (Minecraft block-like)
    ======================================================== */
-const emojis = ['🌸','💖','✨','💎','🎀','💗','🌷','⭐','💓','🩷'];
+const particleChars = ['✦','◆','▪','◉','◈','✧','⬡'];
+const particleColors = ['#5b8cff','#7c5fff','#a78bfa','#60efff','#3ddc84','#f5c542'];
 function spawnParticle() {
   const container = document.getElementById('particles-container');
   const p = document.createElement('div');
   p.className = 'particle';
-  p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  p.textContent = particleChars[Math.floor(Math.random() * particleChars.length)];
+  p.style.color = particleColors[Math.floor(Math.random() * particleColors.length)];
   p.style.left = Math.random() * 100 + 'vw';
   p.style.bottom = '0px';
-  const dur = 3 + Math.random() * 3;
+  const dur = 4 + Math.random() * 4;
   p.style.animationDuration = dur + 's';
-  p.style.fontSize = (14 + Math.random() * 14) + 'px';
+  p.style.fontSize = (8 + Math.random() * 10) + 'px';
+  p.style.opacity = '0.4';
   container.appendChild(p);
   setTimeout(() => p.remove(), dur * 1000);
 }
-setInterval(spawnParticle, 800);
+setInterval(spawnParticle, 1200);
 
 /* ========================================================
    INIT
@@ -1428,7 +1725,15 @@ setInterval(spawnParticle, 800);
 document.addEventListener('DOMContentLoaded', () => {
   renderPalette();
   updateOutputText();
+  parseTwemoji(document.body);
+
+  // Alt+click on threshold
+  document.getElementById('decode-threshold-val').addEventListener('click', e => {
+    if (e.altKey) {
+      e.target.value = Math.min(255, parseInt(e.target.value || 40) + 10);
+    }
+  });
 });
 </script>
 </body>
-</html>
+  </html>
